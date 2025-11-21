@@ -23,3 +23,4 @@ rootProject.name = "JikMBC"
 include(":app")
 include(":core:data")
 include(":feature:home")
+include(":feature:detail")
