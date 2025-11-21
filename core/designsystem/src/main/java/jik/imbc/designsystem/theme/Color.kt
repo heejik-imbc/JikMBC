@@ -1,4 +1,4 @@
-package jik.imbc.jikmbc.ui.theme
+package jik.imbc.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

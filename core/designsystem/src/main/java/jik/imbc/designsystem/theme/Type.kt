@@ -1,4 +1,4 @@
-package jik.imbc.jikmbc.ui.theme
+package jik.imbc.designsystem.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
