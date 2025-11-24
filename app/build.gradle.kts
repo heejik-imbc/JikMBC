@@ -42,6 +42,8 @@ android {
 dependencies {
     // modules
     implementation(projects.core.designsystem)
+    implementation(projects.feature.home)
+    implementation(projects.feature.detail)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
