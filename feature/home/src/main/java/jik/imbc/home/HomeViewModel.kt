@@ -15,4 +15,20 @@ class HomeViewModel(
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    init {
+        getContents()
+    }
+
+    private fun getContents() {
+        val dramasResult = contentRepository.getDramaContents()
+        val entertainmentsResult = contentRepository.getEntertainmentContents()
+
+        val dramas = dramasResult.getOrNull() ?: emptyList()
+        val entertainments = entertainmentsResult.getOrNull() ?: emptyList()
+
+        _uiState.value = HomeUiState.Success(
+            dramas = dramas,
+            entertainments = entertainments
+        )
+    }
 }
