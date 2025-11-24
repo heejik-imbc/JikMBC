@@ -12,6 +12,7 @@ composeBom = "2025.11.01"
 appcompat = "1.7.1"
 material = "1.13.0"
 coil = "2.7.0"
+palette = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,9 @@ material = { group = "com.google.android.material", name = "material", version.r
 
 # coil
 compose-coil = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+
+# Palette
+palette = { group = "androidx.palette", name = "palette", version.ref = "palette" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
