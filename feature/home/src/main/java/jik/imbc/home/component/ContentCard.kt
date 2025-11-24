@@ -1,6 +1,5 @@
 package jik.imbc.home.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.sizeIn
@@ -11,6 +10,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jik.imbc.model.Content
+import jik.imbc.ui.effect.onClickWithPressEffect
 
 @Composable
 internal fun ContentCard(
@@ -20,7 +20,7 @@ internal fun ContentCard(
 ) {
 
     Column(
-        modifier = modifier.clickable(onClick = onClick)
+        modifier = modifier.onClickWithPressEffect(onClick = onClick)
     ) {
         AsyncImage(
             modifier = Modifier
