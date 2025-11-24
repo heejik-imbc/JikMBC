@@ -8,6 +8,7 @@ sealed interface HomeUiState {
     data object Loading : HomeUiState
 
     data class Success(
+        val popularContents: List<Content>,
         val dramas: List<Content>,
         val entertainments: List<Content>
     ) : HomeUiState

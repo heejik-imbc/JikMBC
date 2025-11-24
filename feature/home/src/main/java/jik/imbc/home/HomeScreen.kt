@@ -2,10 +2,9 @@ package jik.imbc.home
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -57,6 +56,11 @@ internal fun HomeScreen(
     Column(
         modifier = modifier
     ) {
+        MainContents(
+            contents = homeUiState.popularContents,
+            onClickContent = onClickContent
+        )
+
         ContentList(
             contents = homeUiState.dramas,
             onClickContent = onClickContent
@@ -69,7 +73,18 @@ internal fun HomeScreen(
 }
 
 @Composable
-internal fun ContentList(
+private fun MainContents(
+    modifier: Modifier = Modifier,
+    contents: List<Content>,
+    onClickContent: (id: Int) -> Unit
+) {
+    Box(modifier = modifier) {
+
+    }
+}
+
+@Composable
+private fun ContentList(
     modifier: Modifier = Modifier,
     contents: List<Content>,
     onClickContent: (id: Int) -> Unit
@@ -94,7 +109,11 @@ internal fun ContentList(
 @Composable
 private fun HomeScreenPreview() {
     HomeScreen(
-        homeUiState = HomeUiState.Success(dramas = emptyList(), entertainments = emptyList()),
+        homeUiState = HomeUiState.Success(
+            popularContents = emptyList(),
+            dramas = emptyList(),
+            entertainments = emptyList()
+        ),
         onClickContent = {}
     )
 }
