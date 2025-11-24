@@ -4,7 +4,7 @@ import jik.imbc.model.Content
 
 internal val MockEntertainment = listOf(
     Content(
-        id = "ent1",
+        id = 1,
         title = "Funny Moments Compilation",
         description = "A compilation of the funniest moments from various shows.",
         thumbnailUrl = "https://example.com/thumbnails/funny_moments.jpg",
@@ -13,7 +13,7 @@ internal val MockEntertainment = listOf(
         releaseDate = "2022-05-10",
     ),
     Content(
-        id = "ent2",
+        id = 2,
         title = "Top 10 Viral Videos",
         description = "A countdown of the top 10 viral videos that took the internet by storm.",
         thumbnailUrl = "https://example.com/thumbnails/viral_videos.jpg",
@@ -22,7 +22,7 @@ internal val MockEntertainment = listOf(
         releaseDate = "2021-11-22",
     ),
     Content(
-        id = "ent3",
+        id = 3,
         title = "Celebrity Interviews",
         description = "Exclusive interviews with your favorite celebrities.",
         thumbnailUrl = "https://example.com/thumbnails/celebrity_interviews.jpg",
