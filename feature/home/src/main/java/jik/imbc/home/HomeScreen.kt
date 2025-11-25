@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +55,7 @@ internal fun HomeScreen(
 ) {
 
     Column(
-        modifier = modifier
+        modifier = modifier.verticalScroll(rememberScrollState()),
     ) {
         MainContents(
             contents = homeUiState.popularContents,
