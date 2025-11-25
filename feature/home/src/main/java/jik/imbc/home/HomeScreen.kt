@@ -1,16 +1,24 @@
 package jik.imbc.home
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +28,7 @@ import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.home.component.ContentCard
 import jik.imbc.home.model.HomeUiState
 import jik.imbc.model.Content
+import jik.imbc.ui.palette.ExtractRepresentativeColor
 
 @Composable
 fun HomeRoute(
@@ -53,12 +62,22 @@ internal fun HomeScreen(
     homeUiState: HomeUiState.Success,
     onClickContent: (id: Int) -> Unit
 ) {
+    var backgroundColor by remember { mutableStateOf(Color.Transparent) }
+    val mainPagerState = rememberPagerState(pageCount = { homeUiState.popularContents.size })
+
+    val currentMainContent = homeUiState.popularContents[mainPagerState.currentPage]
+    ExtractRepresentativeColor(imageUrl = currentMainContent.thumbnailUrl) {
+        backgroundColor = it
+    }
 
     Column(
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .background(color = backgroundColor),
     ) {
         MainContents(
             contents = homeUiState.popularContents,
+            pagerState = mainPagerState,
             onClickContent = onClickContent
         )
 
@@ -77,11 +96,13 @@ internal fun HomeScreen(
 private fun MainContents(
     modifier: Modifier = Modifier,
     contents: List<Content>,
+    pagerState: PagerState,
     onClickContent: (id: Int) -> Unit
 ) {
     HomePager(
         modifier = modifier,
         contents = contents,
+        pagerState = pagerState,
         onClickContent = onClickContent
     )
 }

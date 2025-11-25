@@ -25,7 +25,7 @@ import jik.imbc.model.Content
 fun HomePager(
     modifier: Modifier = Modifier,
     contents: List<Content>,
-    pagerState: PagerState = rememberPagerState(pageCount = { contents.size }),
+    pagerState: PagerState,
     onClickContent: (id: Int) -> Unit
 ) {
     Column(modifier = modifier) {
