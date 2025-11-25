@@ -8,6 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
@@ -92,6 +94,8 @@ internal fun HomeScreen(
             .verticalScroll(rememberScrollState())
             .background(brush = Brush.verticalGradient(colorStops = colorStops)),
     ) {
+        Spacer(modifier = Modifier.height(46.dp))
+
         MainContents(
             contents = homeUiState.popularContents,
             pagerState = mainPagerState,
