@@ -1,7 +1,7 @@
 package jik.imbc.ui.layout
 
-import android.util.Log
-import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,32 +17,36 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
 import kotlinx.coroutines.delay
-import org.w3c.dom.Text
+import kotlinx.coroutines.launch
+
+private const val ITEM_ANIMATION_OFFSET_Y_PIXEL = 100
 
 @Composable
 fun EffectColumn(
     modifier: Modifier = Modifier,
-    delayPerItem: Long = 300,
+    delayPerItem: Long = 200,
     content: @Composable () -> Unit
 ) {
-
     var visibleCount by remember { mutableIntStateOf(0) }
     var maxCount = remember { 0 }
+    val animations = remember { mutableListOf<Animatable<Float, AnimationVector1D>>() }
 
-    LaunchedEffect(key1 = maxCount) {
-        while (visibleCount < maxCount) {
+    LaunchedEffect(Unit) {
+        while (animations.size < maxCount) {
+            animations.add(Animatable(0f))
+        }
+
+        repeat(maxCount) { index ->
             visibleCount++
+            launch {
+                animations[index].animateTo(1f, tween(durationMillis = 200))
+            }
+
             delay(delayPerItem)
         }
     }
-    var targetOffset by remember { mutableIntStateOf(100) }
-    val offset by animateIntAsState(targetValue = targetOffset, tween(durationMillis = 200))
 
-    LaunchedEffect(visibleCount) {
-        targetOffset = 0
-    }
-
-    val measurePolicy: MeasurePolicy = remember {
+    val measurePolicy = remember {
         object : MeasurePolicy {
             override fun MeasureScope.measure(
                 measurables: List<Measurable>,
@@ -58,13 +62,12 @@ fun EffectColumn(
 
                 return layout(constraints.maxWidth, totalHeight) {
                     var y = 0
-                    for (i in 0 until visibleCount) {
-                        val placeable = placeables[i]
+                    placeables.forEachIndexed { index, placeable ->
+                        val progress = animations.getOrNull(index)?.value ?: 1f
+                        val offsetY = ((1f - progress) * ITEM_ANIMATION_OFFSET_Y_PIXEL).toInt()
 
-                        if (i == visibleCount -1) {
-                            placeable.placeRelative(x = 0, y = y + offset)
-                        } else {
-                            placeable.placeRelative(x = 0, y = y)
+                        if (index < visibleCount) {
+                            placeable.placeRelative(x = 0, y = y + offsetY)
                         }
                         y += placeable.height
                     }
