@@ -14,26 +14,30 @@ import coil.size.Size
 
 @Composable
 fun ExtractRepresentativeColor(imageUrl: String, onColorExtracted: (Color) -> Unit) {
-    val painter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(LocalContext.current)
+    val context = LocalContext.current
+    val defaultColor = Color.Transparent.toArgb()
+
+    rememberAsyncImagePainter(
+        model = ImageRequest.Builder(context)
             .data(imageUrl)
             .size(Size.ORIGINAL)
             .allowHardware(false)
-            .build()
-    )
-    val painterState = painter.state
-    val defaultColor = Color.Transparent.toArgb()
-    if (painterState is AsyncImagePainter.State.Success) {
-        val bitmap = painterState.result.drawable.toBitmap()
-        Palette.from(bitmap).generate { palette ->
-            palette?.let {
-                val vibrantColor = it.getVibrantColor(defaultColor)
-                if (vibrantColor != defaultColor) {
-                    onColorExtracted(Color(vibrantColor))
-                } else {
-                    onColorExtracted(Color(it.getDominantColor(defaultColor)))
+            .build(),
+        onState = { painterState ->
+            if (painterState is AsyncImagePainter.State.Success) {
+                val bitmap = painterState.result.drawable.toBitmap()
+
+                Palette.from(bitmap).generate { palette ->
+                    palette?.let {
+                        val vibrantColor = it.getVibrantColor(defaultColor)
+                        if (vibrantColor != defaultColor) {
+                            onColorExtracted(Color(vibrantColor))
+                        } else {
+                            onColorExtracted(Color(it.getDominantColor(defaultColor)))
+                        }
+                    }
                 }
             }
         }
-    }
+    )
 }
