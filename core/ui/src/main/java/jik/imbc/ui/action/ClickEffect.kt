@@ -1,4 +1,4 @@
-package jik.imbc.ui.effect
+package jik.imbc.ui.action
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween

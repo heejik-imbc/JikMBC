@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jik.imbc.model.Content
-import jik.imbc.ui.effect.onClickWithPressEffect
+import jik.imbc.ui.action.onClickWithPressEffect
 
 @Composable
 internal fun MainCard(

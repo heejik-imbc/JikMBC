@@ -6,7 +6,6 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -34,7 +33,7 @@ import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.home.component.ContentCard
 import jik.imbc.home.model.HomeUiState
 import jik.imbc.model.Content
-import jik.imbc.ui.effect.EffectColumn
+import jik.imbc.ui.layout.EffectColumn
 import jik.imbc.ui.palette.ExtractRepresentativeColor
 
 @Composable

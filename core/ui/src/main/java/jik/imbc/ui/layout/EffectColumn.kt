@@ -1,4 +1,4 @@
-package jik.imbc.ui.effect
+package jik.imbc.ui.layout
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
