@@ -1,6 +1,9 @@
 package jik.imbc.home
 
 import android.widget.Toast
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,8 +74,16 @@ internal fun HomeScreen(
         backgroundColor = it
     }
 
+    val animatedBackgroundColor by animateColorAsState(
+        targetValue = backgroundColor,
+        animationSpec = tween(
+            durationMillis = 600,
+            easing = FastOutSlowInEasing
+        ),
+    )
+
     val colorStops = arrayOf(
-        0.0f to backgroundColor,
+        0.0f to animatedBackgroundColor,
         0.4f to Color.Transparent
     )
 
