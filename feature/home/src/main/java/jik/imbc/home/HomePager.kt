@@ -10,16 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import jik.imbc.home.component.MainCard
 import jik.imbc.model.Content
+import kotlin.math.absoluteValue
 
 @Composable
 fun HomePager(
@@ -34,7 +35,14 @@ fun HomePager(
         ) { page ->
             Box(modifier = Modifier.fillMaxWidth()) {
                 MainCard(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .graphicsLayer {
+                            val pageOffset =
+                                ((pagerState.currentPage - page) + pagerState.currentPageOffsetFraction).absoluteValue
+                            scaleX = 1f - (pageOffset * 0.3f)
+                            scaleY = 1f - (pageOffset * 0.3f)
+                        },
                     content = contents[page],
                     onClick = { onClickContent(contents[page].id) }
                 )
