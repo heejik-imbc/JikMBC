@@ -2,7 +2,6 @@ package jik.imbc.home
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyRow
@@ -78,9 +77,11 @@ private fun MainContents(
     contents: List<Content>,
     onClickContent: (id: Int) -> Unit
 ) {
-    Box(modifier = modifier) {
-
-    }
+    HomePager(
+        modifier = modifier,
+        contents = contents,
+        onClickContent = onClickContent
+    )
 }
 
 @Composable
