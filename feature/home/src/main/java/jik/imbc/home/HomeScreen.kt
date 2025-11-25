@@ -34,6 +34,7 @@ import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.home.component.ContentCard
 import jik.imbc.home.model.HomeUiState
 import jik.imbc.model.Content
+import jik.imbc.ui.effect.EffectColumn
 import jik.imbc.ui.palette.ExtractRepresentativeColor
 
 @Composable
@@ -89,7 +90,7 @@ internal fun HomeScreen(
         0.4f to Color.Transparent
     )
 
-    Column(
+    EffectColumn(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .background(brush = Brush.verticalGradient(colorStops = colorStops)),
