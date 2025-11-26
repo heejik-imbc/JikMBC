@@ -1,5 +1,6 @@
 package jik.imbc.home.component
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,24 +16,36 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jik.imbc.model.Content
 import jik.imbc.ui.action.onClickWithPressEffect
+import jik.imbc.ui.compositionlocal.LocalAnimatedContentScope
+import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun MainCard(
     modifier: Modifier = Modifier,
     content: Content,
     onClick: () -> Unit
 ) {
-    Box(
-        modifier = modifier.onClickWithPressEffect(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Poster(
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(8.dp))
-                .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
-            url = content.thumbnailUrl,
-            description = content.description
-        )
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalAnimatedContentScope.current
+
+    with(sharedTransitionScope) {
+        Box(
+            modifier = modifier.onClickWithPressEffect(onClick = onClick),
+            contentAlignment = Alignment.Center
+        ) {
+            Poster(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.White, RoundedCornerShape(8.dp))
+                    .sharedElement(
+                        sharedContentState = sharedTransitionScope.rememberSharedContentState(key = "main_${content.id}"),
+                        animatedVisibilityScope = animatedContentScope
+                    ),
+                url = content.thumbnailUrl,
+                description = content.description
+            )
+        }
     }
 }
 
