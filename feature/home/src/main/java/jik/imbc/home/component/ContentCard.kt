@@ -1,5 +1,6 @@
 package jik.imbc.home.component
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.sizeIn
@@ -13,26 +14,37 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jik.imbc.model.Content
 import jik.imbc.ui.action.onClickWithPressEffect
+import jik.imbc.ui.compositionlocal.LocalAnimatedContentScope
+import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 internal fun ContentCard(
     modifier: Modifier = Modifier,
     content: Content,
     onClick: () -> Unit
 ) {
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalAnimatedContentScope.current
 
-    Column(
-        modifier = modifier.onClickWithPressEffect(onClick = onClick)
-    ) {
-        AsyncImage(
-            modifier = Modifier
-                .sizeIn(maxHeight = 160.dp)
-                .aspectRatio(2 / 3f)
-                .clip(RoundedCornerShape(4.dp)),
-            model = content.thumbnailUrl,
-            contentDescription = content.description,
-            alignment = Alignment.Center,
-            contentScale = ContentScale.Fit
-        )
+    with(sharedTransitionScope) {
+        Column(
+            modifier = modifier.onClickWithPressEffect(onClick = onClick)
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .sizeIn(maxHeight = 160.dp)
+                    .aspectRatio(2 / 3f)
+                    .clip(RoundedCornerShape(4.dp))
+                    .sharedElement(
+                        sharedContentState = sharedTransitionScope.rememberSharedContentState(key = "content_${content.id}"),
+                        animatedVisibilityScope = animatedContentScope
+                    ),
+                model = content.thumbnailUrl,
+                contentDescription = content.description,
+                alignment = Alignment.Center,
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 }

@@ -1,7 +1,7 @@
 package jik.imbc.detail
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -14,6 +14,8 @@ import coil.compose.AsyncImage
 import jik.imbc.data.mock.MockDramas
 import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.detail.model.DetailUiState
+import jik.imbc.ui.compositionlocal.LocalAnimatedContentScope
+import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
 
 
 @Composable
@@ -37,18 +39,34 @@ fun DetailRoute(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private fun DetailScreen(
     modifier: Modifier = Modifier,
     uiState: DetailUiState.Success,
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        AsyncImage(
-            modifier = Modifier.fillMaxWidth(),
-            model = uiState.content.thumbnailUrl,
-            contentDescription = uiState.content.description,
-            contentScale = ContentScale.Fit
-        )
+
+    val sharedTransitionScope = LocalSharedTransitionScope.current
+    val animatedContentScope = LocalAnimatedContentScope.current
+
+
+    with(sharedTransitionScope) {
+        Column(modifier = modifier.fillMaxSize()) {
+            AsyncImage(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .sharedElement(
+                            sharedContentState = sharedTransitionScope.rememberSharedContentState(
+                                key = "content_${uiState.content.id}"
+                            ),
+                            animatedVisibilityScope = animatedContentScope
+                        ),
+                model = uiState.content.thumbnailUrl,
+                contentDescription = uiState.content.description,
+                contentScale = ContentScale.Fit
+            )
+        }
     }
 }
 
