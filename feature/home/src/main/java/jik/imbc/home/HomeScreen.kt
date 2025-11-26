@@ -37,9 +37,9 @@ import jik.imbc.ui.palette.ExtractRepresentativeColor
 
 @Composable
 fun HomeRoute(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel()
 ) {
-    val viewModel: HomeViewModel = viewModel()
     val uiState: HomeUiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val context = LocalContext.current
 
