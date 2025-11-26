@@ -8,6 +8,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
@@ -27,11 +28,13 @@ fun EffectColumn(
     delayPerItem: Long = 200,
     content: @Composable () -> Unit
 ) {
-    var visibleCount by remember { mutableIntStateOf(0) }
+    var visibleCount by rememberSaveable { mutableIntStateOf(0) }
     var maxCount by remember { mutableIntStateOf(0) }
     val animations = remember { mutableListOf<Animatable<Float, AnimationVector1D>>() }
 
     LaunchedEffect(Unit) {
+        if (visibleCount == maxCount) return@LaunchedEffect
+
         while (animations.size < maxCount) {
             animations.add(Animatable(0f))
         }
