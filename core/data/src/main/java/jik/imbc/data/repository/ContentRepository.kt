@@ -6,4 +6,6 @@ interface ContentRepository {
     fun getEntertainmentContents(): Result<List<Content>>
 
     fun getDramaContents(): Result<List<Content>>
+
+    fun getContentById(contentId: Int): Result<Content>
 }

@@ -15,4 +15,12 @@ class ContentRepositoryImpl : ContentRepository {
     override fun getDramaContents(): Result<List<Content>> {
         return Result.success(MockDramas.map { it.copy(thumbnailUrl = "$BASE_URL_THUMBNAIL/uhXxW7EmzZIWFVpbF42r6L2g7Oh.jpg") })
     }
+
+    override fun getContentById(contentId: Int): Result<Content> {
+        val allContents = MockDramas + MockEntertainment
+        val content = allContents.find { it.id == contentId }
+            ?: throw IllegalArgumentException("Content not found")
+
+        return Result.success(content)
+    }
 }
