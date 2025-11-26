@@ -28,7 +28,7 @@ fun EffectColumn(
     content: @Composable () -> Unit
 ) {
     var visibleCount by remember { mutableIntStateOf(0) }
-    var maxCount = remember { 0 }
+    var maxCount by remember { mutableIntStateOf(0) }
     val animations = remember { mutableListOf<Animatable<Float, AnimationVector1D>>() }
 
     LaunchedEffect(Unit) {
