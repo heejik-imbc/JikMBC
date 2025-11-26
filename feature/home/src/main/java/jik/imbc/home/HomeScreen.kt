@@ -1,6 +1,5 @@
 package jik.imbc.home
 
-import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -23,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,7 +49,7 @@ fun HomeRoute(
         is HomeUiState.Success -> {
             HomeScreen(
                 modifier = modifier,
-                homeUiState = uiState,
+                uiState = uiState,
                 onClickContent = onClickContent
             )
         }
@@ -62,13 +60,13 @@ fun HomeRoute(
 @Composable
 internal fun HomeScreen(
     modifier: Modifier = Modifier,
-    homeUiState: HomeUiState.Success,
+    uiState: HomeUiState.Success,
     onClickContent: (id: Int) -> Unit
 ) {
     var backgroundColor by remember { mutableStateOf(Color.Transparent) }
-    val mainPagerState = rememberPagerState(pageCount = { homeUiState.popularContents.size })
+    val mainPagerState = rememberPagerState(pageCount = { uiState.popularContents.size })
 
-    val currentMainContent = homeUiState.popularContents[mainPagerState.currentPage]
+    val currentMainContent = uiState.popularContents[mainPagerState.currentPage]
     ExtractRepresentativeColor(imageUrl = currentMainContent.thumbnailUrl) {
         backgroundColor = it
     }
@@ -93,17 +91,17 @@ internal fun HomeScreen(
     ) {
         MainContents(
             modifier = Modifier.padding(top = 46.dp),
-            contents = homeUiState.popularContents,
+            contents = uiState.popularContents,
             pagerState = mainPagerState,
             onClickContent = onClickContent
         )
 
         ContentList(
-            contents = homeUiState.dramas,
+            contents = uiState.dramas,
             onClickContent = onClickContent
         )
         ContentList(
-            contents = homeUiState.entertainments,
+            contents = uiState.entertainments,
             onClickContent = onClickContent
         )
     }
@@ -150,7 +148,7 @@ private fun ContentList(
 @Composable
 private fun HomeScreenPreview() {
     HomeScreen(
-        homeUiState = HomeUiState.Success(
+        uiState = HomeUiState.Success(
             popularContents = emptyList(),
             dramas = emptyList(),
             entertainments = emptyList()
