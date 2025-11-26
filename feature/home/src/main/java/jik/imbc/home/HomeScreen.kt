@@ -33,12 +33,13 @@ import jik.imbc.home.model.HomeUiState
 import jik.imbc.model.Content
 import jik.imbc.ui.layout.EffectColumn
 import jik.imbc.ui.palette.ExtractRepresentativeColor
+import jik.imbc.ui.transition.ContentCardElementOrigin
 
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(),
-    onClickContent: (Int) -> Unit
+    onClickContent: (Int, ContentCardElementOrigin) -> Unit
 ) {
     val uiState: HomeUiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
@@ -62,7 +63,7 @@ fun HomeRoute(
 internal fun HomeScreen(
     modifier: Modifier = Modifier,
     uiState: HomeUiState.Success,
-    onClickContent: (id: Int) -> Unit
+    onClickContent: (id: Int, origin: ContentCardElementOrigin) -> Unit
 ) {
     var backgroundColor by rememberSaveable { mutableIntStateOf(Color.Transparent.toArgb()) }
     val mainPagerState = rememberPagerState(pageCount = { uiState.popularContents.size })
@@ -94,16 +95,16 @@ internal fun HomeScreen(
             modifier = Modifier.padding(top = 46.dp),
             contents = uiState.popularContents,
             pagerState = mainPagerState,
-            onClickContent = onClickContent
+            onClickContent = { onClickContent(it, ContentCardElementOrigin.MAIN_CARD) }
         )
 
         ContentList(
             contents = uiState.dramas,
-            onClickContent = onClickContent
+            onClickContent = { onClickContent(it, ContentCardElementOrigin.LIST_CARD) }
         )
         ContentList(
             contents = uiState.entertainments,
-            onClickContent = onClickContent
+            onClickContent = { onClickContent(it, ContentCardElementOrigin.LIST_CARD) }
         )
     }
 }
@@ -154,6 +155,6 @@ private fun HomeScreenPreview() {
             dramas = emptyList(),
             entertainments = emptyList()
         ),
-        onClickContent = {}
+        onClickContent = { _, _ -> }
     )
 }

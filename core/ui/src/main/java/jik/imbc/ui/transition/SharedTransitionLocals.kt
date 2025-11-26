@@ -1,4 +1,4 @@
-package jik.imbc.ui.compositionlocal
+package jik.imbc.ui.transition
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi

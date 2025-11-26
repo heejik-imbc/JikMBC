@@ -13,7 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import jik.imbc.designsystem.theme.JikMBCTheme
-import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
+import jik.imbc.ui.transition.LocalSharedTransitionScope
 
 
 class MainActivity : ComponentActivity() {

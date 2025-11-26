@@ -16,8 +16,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import jik.imbc.model.Content
 import jik.imbc.ui.action.onClickWithPressEffect
-import jik.imbc.ui.compositionlocal.LocalAnimatedContentScope
-import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
+import jik.imbc.ui.transition.ContentCardElementOrigin
+import jik.imbc.ui.transition.ContentCardSharedElementKey
+import jik.imbc.ui.transition.LocalAnimatedContentScope
+import jik.imbc.ui.transition.LocalSharedTransitionScope
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
@@ -39,7 +41,12 @@ internal fun MainCard(
                     .clip(shape = RoundedCornerShape(8.dp))
                     .border(1.dp, Color.White, RoundedCornerShape(8.dp))
                     .sharedElement(
-                        sharedContentState = sharedTransitionScope.rememberSharedContentState(key = "main_${content.id}"),
+                        sharedContentState = sharedTransitionScope.rememberSharedContentState(
+                            key = ContentCardSharedElementKey(
+                                contentId = content.id,
+                                type = ContentCardElementOrigin.MAIN_CARD
+                            )
+                        ),
                         animatedVisibilityScope = animatedContentScope
                     ),
                 url = content.thumbnailUrl,

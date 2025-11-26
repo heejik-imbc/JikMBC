@@ -13,14 +13,17 @@ import coil.compose.AsyncImage
 import jik.imbc.data.mock.MockDramas
 import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.detail.model.DetailUiState
-import jik.imbc.ui.compositionlocal.LocalAnimatedContentScope
-import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
+import jik.imbc.ui.transition.ContentCardElementOrigin
+import jik.imbc.ui.transition.ContentCardSharedElementKey
+import jik.imbc.ui.transition.LocalAnimatedContentScope
+import jik.imbc.ui.transition.LocalSharedTransitionScope
 
 
 @Composable
 fun DetailRoute(
     modifier: Modifier = Modifier,
-    viewModel: DetailViewModel
+    viewModel: DetailViewModel,
+    origin: ContentCardElementOrigin
 ) {
     val uiState: DetailUiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
@@ -32,7 +35,8 @@ fun DetailRoute(
         is DetailUiState.Success -> {
             DetailScreen(
                 modifier = modifier,
-                uiState = uiState
+                uiState = uiState,
+                origin = origin
             )
         }
     }
@@ -43,6 +47,7 @@ fun DetailRoute(
 private fun DetailScreen(
     modifier: Modifier = Modifier,
     uiState: DetailUiState.Success,
+    origin: ContentCardElementOrigin
 ) {
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
@@ -57,7 +62,10 @@ private fun DetailScreen(
                         .fillMaxWidth()
                         .sharedElement(
                             sharedContentState = sharedTransitionScope.rememberSharedContentState(
-                                key = "content_${uiState.content.id}"
+                                key = ContentCardSharedElementKey(
+                                    contentId = uiState.content.id,
+                                    type = origin
+                                )
                             ),
                             animatedVisibilityScope = animatedContentScope
                         ),
@@ -74,6 +82,7 @@ private fun DetailScreen(
 @Composable
 private fun DetailScreenPreview() {
     DetailScreen(
-        uiState = DetailUiState.Success(MockDramas.first())
+        uiState = DetailUiState.Success(MockDramas.first()),
+        origin = ContentCardElementOrigin.MAIN_CARD
     )
 }
