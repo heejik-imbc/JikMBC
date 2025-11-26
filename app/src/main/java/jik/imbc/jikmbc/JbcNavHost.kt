@@ -22,7 +22,7 @@ fun JbcNavHost(
         startDestination = HomeRoute,
         modifier = modifier
     ) {
-        homeScreen(onClickContent = { navController.navigateDetail(it) })
+        homeScreen(onClickContent = { id -> navController.navigateDetail(id) })
         detailScreen()
     }
 }

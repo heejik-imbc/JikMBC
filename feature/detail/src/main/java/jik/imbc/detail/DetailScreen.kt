@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import jik.imbc.data.mock.MockDramas
 import jik.imbc.designsystem.state.EmptyLoading
@@ -21,7 +20,7 @@ import jik.imbc.ui.compositionlocal.LocalSharedTransitionScope
 @Composable
 fun DetailRoute(
     modifier: Modifier = Modifier,
-    viewModel: DetailViewModel = viewModel()
+    viewModel: DetailViewModel
 ) {
     val uiState: DetailUiState = viewModel.uiState.collectAsStateWithLifecycle().value
 

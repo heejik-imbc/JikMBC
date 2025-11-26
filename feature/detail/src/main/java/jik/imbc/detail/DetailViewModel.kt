@@ -2,6 +2,9 @@ package jik.imbc.detail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.toRoute
 import jik.imbc.data.repository.ContentRepository
 import jik.imbc.data.repository.ContentRepositoryImpl
@@ -13,7 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 
 
 class DetailViewModel(
-    savedStateHandle: SavedStateHandle = SavedStateHandle(mapOf("contentId" to 1)),
+    savedStateHandle: SavedStateHandle,
     val contentRepository: ContentRepository = ContentRepositoryImpl()
 ) : ViewModel() {
 
@@ -34,5 +37,14 @@ class DetailViewModel(
         } else {
             // Handle error case as needed
         }
+    }
+
+    companion object {
+        fun provideFactory(savedStateHandle: SavedStateHandle): ViewModelProvider.Factory =
+            viewModelFactory {
+                initializer {
+                    DetailViewModel(savedStateHandle = savedStateHandle)
+                }
+            }
     }
 }
