@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import jik.imbc.designsystem.theme.JikMBCTheme
-import jik.imbc.home.HomeRoute
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +21,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     contentWindowInsets = WindowInsets()
                 ) { innerPadding ->
-                    HomeRoute(
+                    JbcNavHost(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }

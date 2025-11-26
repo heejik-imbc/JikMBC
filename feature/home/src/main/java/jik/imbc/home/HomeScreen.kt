@@ -38,10 +38,10 @@ import jik.imbc.ui.palette.ExtractRepresentativeColor
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
+    onClickContent: (Int) -> Unit
 ) {
     val uiState: HomeUiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    val context = LocalContext.current
 
     when (uiState) {
         is HomeUiState.Loading -> {
@@ -52,9 +52,7 @@ fun HomeRoute(
             HomeScreen(
                 modifier = modifier,
                 homeUiState = uiState,
-                onClickContent = { contentId ->
-                    Toast.makeText(context, "contentId: $contentId", Toast.LENGTH_SHORT).show()
-                }
+                onClickContent = onClickContent
             )
         }
     }
