@@ -3,7 +3,7 @@ package jik.imbc.data.mock
 import jik.imbc.model.Content
 
 
-internal val MockDramas = listOf(
+val MockDramas = listOf(
     Content(
         id = 11,
         title = "Romantic Saga",
