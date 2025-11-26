@@ -17,7 +17,10 @@ class ContentRepositoryImpl : ContentRepository {
     }
 
     override fun getContentById(contentId: Int): Result<Content> {
-        val allContents = MockDramas + MockEntertainment
+        val allContents =
+            getEntertainmentContents().getOrNull().orEmpty() +
+                    getDramaContents().getOrNull().orEmpty()
+
         val content = allContents.find { it.id == contentId }
             ?: throw IllegalArgumentException("Content not found")
 

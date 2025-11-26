@@ -1,14 +1,16 @@
 package jik.imbc.detail
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import jik.imbc.data.mock.MockDramas
 import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.detail.model.DetailUiState
@@ -40,12 +42,12 @@ private fun DetailScreen(
     modifier: Modifier = Modifier,
     uiState: DetailUiState.Success,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = uiState.content.id.toString(),
+    Column(modifier = modifier.fillMaxSize()) {
+        AsyncImage(
+            modifier = Modifier.fillMaxWidth(),
+            model = uiState.content.thumbnailUrl,
+            contentDescription = uiState.content.description,
+            contentScale = ContentScale.Fit
         )
     }
 }
