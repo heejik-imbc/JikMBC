@@ -76,11 +76,7 @@ fun HomeIndicator(
 
 @Composable
 fun HomeIndicatorItem(isSelected: Boolean) {
-    val color = if (isSelected) {
-        MaterialTheme.colorScheme.surface
-    } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-    }
+    val color = MaterialTheme.colorScheme.onSurface.copy(if (isSelected) 0.6f else 0.3f)
 
     Box(
         modifier = Modifier
