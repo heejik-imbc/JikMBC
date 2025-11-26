@@ -1,10 +1,12 @@
 package jik.imbc.detail.navigation
 
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import jik.imbc.detail.DetailRoute
+import jik.imbc.ui.compositionlocal.LocalAnimatedContentScope
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -17,6 +19,8 @@ fun NavController.navigateDetail(
 
 fun NavGraphBuilder.detailScreen() {
     composable<DetailRoute> {
-        DetailRoute()
+        CompositionLocalProvider(LocalAnimatedContentScope provides this) {
+            DetailRoute()
+        }
     }
 }

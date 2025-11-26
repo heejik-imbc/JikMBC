@@ -41,6 +41,7 @@ android {
 
 dependencies {
     // modules
+    implementation(projects.core.ui)
     implementation(projects.core.designsystem)
     implementation(projects.feature.home)
     implementation(projects.feature.detail)
