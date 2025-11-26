@@ -15,13 +15,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,16 +64,16 @@ internal fun HomeScreen(
     uiState: HomeUiState.Success,
     onClickContent: (id: Int) -> Unit
 ) {
-    var backgroundColor by remember { mutableStateOf(Color.Transparent) }
+    var backgroundColor by rememberSaveable { mutableIntStateOf(Color.Transparent.toArgb()) }
     val mainPagerState = rememberPagerState(pageCount = { uiState.popularContents.size })
 
     val currentMainContent = uiState.popularContents[mainPagerState.currentPage]
     ExtractRepresentativeColor(imageUrl = currentMainContent.thumbnailUrl) {
-        backgroundColor = it
+        backgroundColor = it.toArgb()
     }
 
     val animatedBackgroundColor by animateColorAsState(
-        targetValue = backgroundColor,
+        targetValue = Color(backgroundColor),
         animationSpec = tween(
             durationMillis = 600,
             easing = FastOutSlowInEasing
