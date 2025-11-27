@@ -1,5 +1,6 @@
 package jik.imbc.detail
 
+import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import jik.imbc.data.mock.MockDramas
 import jik.imbc.designsystem.state.EmptyLoading
+import jik.imbc.detail.component.DetailTopBar
 import jik.imbc.detail.model.DetailUiState
 import jik.imbc.ui.transition.ContentCardElementOrigin
 import jik.imbc.ui.transition.ContentCardSharedElementKey
@@ -52,10 +55,17 @@ private fun DetailScreen(
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val animatedContentScope = LocalAnimatedContentScope.current
-
+    val context = LocalContext.current
 
     with(sharedTransitionScope) {
         Column(modifier = modifier.fillMaxSize()) {
+            DetailTopBar(onClickBack = {
+                Toast.makeText(
+                    context,
+                    "Back",
+                    Toast.LENGTH_SHORT
+                ).show()
+            })
             AsyncImage(
                 modifier =
                     Modifier
