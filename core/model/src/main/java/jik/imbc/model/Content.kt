@@ -9,6 +9,7 @@ data class Content(
     val category: ContentCategory,
     val rating: String,
     val releaseDate: String,
+    val ratingCount: Int = 0,
 )
 
 enum class ContentCategory {

@@ -12,8 +12,8 @@ class ContentRepositoryImpl : ContentRepository {
         return Result.success(
             MockEntertainment.map {
                 it.copy(
-                    thumbnailUrl = "$BASE_URL_THUMBNAIL/l8pwO23MCvqYumzozpxynCNfck1.jpg",
-                    posterUrl = "$BASE_URL_THUMBNAIL/si9tolnefLSUKaqQEGz1bWArOaL.jpg"
+                    thumbnailUrl = "$BASE_URL_THUMBNAIL/${it.thumbnailUrl}",
+                    posterUrl = "$BASE_URL_THUMBNAIL/${it.posterUrl}"
                 )
             }
         )
@@ -22,8 +22,8 @@ class ContentRepositoryImpl : ContentRepository {
     override fun getDramaContents(): Result<List<Content>> {
         return Result.success(MockDramas.map {
             it.copy(
-                thumbnailUrl = "$BASE_URL_THUMBNAIL/5h2EsPKNDdB3MAtOk9MB9Ycg9Rz.jpg",
-                posterUrl = "$BASE_URL_THUMBNAIL/oJ7g2CifqpStmoYQyaLQgEU32qO.jpg"
+                thumbnailUrl = "$BASE_URL_THUMBNAIL/${it.thumbnailUrl}",
+                posterUrl = "$BASE_URL_THUMBNAIL/${it.posterUrl}"
             )
         })
     }
