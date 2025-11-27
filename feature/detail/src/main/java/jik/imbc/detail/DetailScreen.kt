@@ -1,8 +1,12 @@
 package jik.imbc.detail
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -14,12 +18,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +47,7 @@ import jik.imbc.designsystem.icon.JbcIcons
 import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.detail.component.DetailTopBar
 import jik.imbc.detail.model.DetailUiState
+import jik.imbc.ui.action.onClickWithPressEffect
 import jik.imbc.ui.count.AnimatedCounter
 import jik.imbc.ui.transition.ContentCardElementOrigin
 import jik.imbc.ui.transition.ContentCardSharedElementKey
@@ -75,6 +88,7 @@ private fun DetailScreen(
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val context = LocalContext.current
+    var ratingExpanded by rememberSaveable { mutableStateOf(false) }
 
     with(sharedTransitionScope) {
         Column(modifier = modifier.fillMaxSize()) {
@@ -93,7 +107,11 @@ private fun DetailScreen(
                     title = uiState.content.title,
                     rating = uiState.content.rating.toDouble(),
                     ratingCount = uiState.content.ratingCount,
-                    releaseYear = uiState.content.releaseYear
+                    releaseYear = uiState.content.releaseYear,
+                    ratingExpanded = ratingExpanded,
+                    onClickRatingModify = {
+                        ratingExpanded = !ratingExpanded
+                    }
                 )
                 Description(
                     description = uiState.content.description
@@ -138,7 +156,9 @@ private fun MainInfo(
     title: String,
     rating: Double,
     ratingCount: Int,
-    releaseYear: String
+    releaseYear: String,
+    ratingExpanded: Boolean,
+    onClickRatingModify: () -> Unit
 ) {
     Column(modifier = modifier) {
         Text(
@@ -152,7 +172,9 @@ private fun MainInfo(
             Spacer(modifier = Modifier.width(8.dp))
             RatingChip(
                 rating = rating,
-                ratingCount = ratingCount
+                ratingCount = ratingCount,
+                ratingExpanded = ratingExpanded,
+                onClickRatingModify = onClickRatingModify
             )
         }
     }
@@ -173,8 +195,12 @@ private fun ReleaseYearChip(
 private fun RatingChip(
     modifier: Modifier = Modifier,
     rating: Double,
-    ratingCount: Int
+    ratingCount: Int,
+    ratingExpanded: Boolean,
+    onClickRatingModify: () -> Unit
 ) {
+
+    Log.d("heejik", "ratingExpanded: $ratingExpanded")
     JbcChip(modifier = modifier.height(intrinsicSize = IntrinsicSize.Max)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -195,11 +221,25 @@ private fun RatingChip(
                     .padding(horizontal = 6.dp),
                 color = Color.Gray.copy(alpha = 0.4f)
             )
-            Icon(
-                modifier = Modifier.size(20.dp),
-                imageVector = JbcIcons.Add,
-                contentDescription = "Rating",
-            )
+            Box(
+                modifier = Modifier
+                    .clip(shape = CircleShape)
+                    .onClickWithPressEffect(
+                        scaleFactor = 1f,
+                        pressColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                        onClick = onClickRatingModify
+                    )
+            ) {
+                val rotation by animateFloatAsState(
+                    targetValue = if (ratingExpanded) 45f else 0f,
+                    animationSpec = spring(),
+                )
+                Icon(
+                    modifier = Modifier.size(20.dp).rotate(rotation),
+                    imageVector = JbcIcons.Add,
+                    contentDescription = if (ratingExpanded) "Close Modify Rating" else "Modify Rating",
+                )
+            }
         }
     }
 }
