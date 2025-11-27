@@ -38,8 +38,6 @@ internal fun MainCard(
         ) {
             Poster(
                 modifier = Modifier
-                    .clip(shape = RoundedCornerShape(8.dp))
-                    .border(1.dp, Color.White, RoundedCornerShape(8.dp))
                     .sharedElement(
                         sharedContentState = sharedTransitionScope.rememberSharedContentState(
                             key = ContentCardSharedElementKey(
@@ -48,8 +46,10 @@ internal fun MainCard(
                             )
                         ),
                         animatedVisibilityScope = animatedContentScope
-                    ),
-                url = content.thumbnailUrl,
+                    )
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
+                url = content.posterUrl,
                 description = content.description
             )
         }

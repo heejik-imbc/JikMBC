@@ -37,7 +37,6 @@ internal fun ContentCard(
                 modifier = Modifier
                     .sizeIn(maxHeight = 160.dp)
                     .aspectRatio(2 / 3f)
-                    .clip(RoundedCornerShape(4.dp))
                     .sharedElement(
                         sharedContentState = sharedTransitionScope.rememberSharedContentState(
                             key = ContentCardSharedElementKey(
@@ -46,8 +45,9 @@ internal fun ContentCard(
                             )
                         ),
                         animatedVisibilityScope = animatedContentScope
-                    ),
-                model = content.thumbnailUrl,
+                    )
+                    .clip(RoundedCornerShape(4.dp)),
+                model = content.posterUrl,
                 contentDescription = content.description,
                 alignment = Alignment.Center,
                 contentScale = ContentScale.Fit
