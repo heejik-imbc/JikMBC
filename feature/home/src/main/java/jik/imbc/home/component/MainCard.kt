@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import jik.imbc.designsystem.icon.JBCIcons
+import jik.imbc.designsystem.icon.JbcIcons
 import jik.imbc.model.Content
 import jik.imbc.ui.action.onClickWithPressEffect
 import jik.imbc.ui.transition.ContentCardElementOrigin
@@ -84,7 +84,7 @@ internal fun MainCard(
                     .padding(horizontal = 14.dp, vertical = 8.dp),
                 title = content.title,
                 rating = content.rating.toDouble(),
-                releaseYear = content.releaseDate.take(4)
+                releaseYear = content.releaseYear
             )
         }
     }
@@ -129,7 +129,7 @@ private fun Content(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 modifier = Modifier.size(20.dp),
-                imageVector = JBCIcons.Star,
+                imageVector = JbcIcons.Star,
                 tint = Color(0xFFFFD250),
                 contentDescription = "rating"
             )

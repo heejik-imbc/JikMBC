@@ -16,7 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import jik.imbc.designsystem.icon.JBCIcons.ArrowBack
+import jik.imbc.designsystem.icon.JbcIcons.ArrowBack
 import jik.imbc.ui.action.onClickWithPressEffect
 
 @Composable

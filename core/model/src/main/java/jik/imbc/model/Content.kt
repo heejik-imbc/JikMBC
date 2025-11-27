@@ -10,7 +10,10 @@ data class Content(
     val rating: String,
     val releaseDate: String,
     val ratingCount: Int = 0,
-)
+) {
+    val releaseYear: String
+        get() = releaseDate.take(4)
+}
 
 enum class ContentCategory {
     ENTERTAINMENT,
