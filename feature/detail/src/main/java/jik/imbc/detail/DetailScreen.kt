@@ -35,6 +35,7 @@ import jik.imbc.designsystem.icon.JbcIcons
 import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.detail.component.DetailTopBar
 import jik.imbc.detail.model.DetailUiState
+import jik.imbc.ui.count.AnimatedCounter
 import jik.imbc.ui.transition.ContentCardElementOrigin
 import jik.imbc.ui.transition.ContentCardSharedElementKey
 import jik.imbc.ui.transition.LocalAnimatedContentScope
@@ -185,7 +186,9 @@ private fun RatingChip(
             Spacer(modifier = Modifier.width(4.dp))
             Text(text = "$rating", fontSize = 13.sp)
             Spacer(modifier = Modifier.width(4.dp))
-            Text(text = "($ratingCount)", fontSize = 13.sp, color = Color(0xFF65A1EC))
+            AnimatedCounter(target = ratingCount) { animatedRatingCount ->
+                Text(text = "(${animatedRatingCount})", fontSize = 13.sp, color = Color(0xFF65A1EC))
+            }
             VerticalDivider(
                 Modifier
                     .fillMaxHeight()
