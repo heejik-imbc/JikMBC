@@ -144,6 +144,8 @@ private fun MainInfo(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row {
+            ReleaseYearChip(releaseYear = releaseYear)
+            Spacer(modifier = Modifier.width(8.dp))
             RatingChip(
                 rating = rating,
                 ratingCount = ratingCount
@@ -151,6 +153,17 @@ private fun MainInfo(
         }
     }
 }
+
+@Composable
+private fun ReleaseYearChip(
+    modifier: Modifier = Modifier,
+    releaseYear: String
+) {
+    JbcChip(modifier = modifier) {
+        Text(text = releaseYear, fontSize = 13.sp)
+    }
+}
+
 
 @Composable
 private fun RatingChip(
