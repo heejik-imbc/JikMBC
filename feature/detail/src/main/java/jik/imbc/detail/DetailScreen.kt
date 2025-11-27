@@ -4,8 +4,10 @@ import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -171,7 +174,7 @@ private fun RatingChip(
     rating: Double,
     ratingCount: Int
 ) {
-    JbcChip(modifier = modifier) {
+    JbcChip(modifier = modifier.height(intrinsicSize = IntrinsicSize.Max)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 modifier = Modifier.size(20.dp),
@@ -183,6 +186,17 @@ private fun RatingChip(
             Text(text = "$rating", fontSize = 13.sp)
             Spacer(modifier = Modifier.width(4.dp))
             Text(text = "($ratingCount)", fontSize = 13.sp, color = Color(0xFF65A1EC))
+            VerticalDivider(
+                Modifier
+                    .fillMaxHeight()
+                    .padding(horizontal = 6.dp),
+                color = Color.Gray.copy(alpha = 0.4f)
+            )
+            Icon(
+                modifier = Modifier.size(20.dp),
+                imageVector = JbcIcons.Add,
+                contentDescription = "Rating",
+            )
         }
     }
 }
