@@ -19,7 +19,7 @@ fun JbcChip(
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+            .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f))
             .padding(8.dp),
         contentAlignment = Alignment.Center
     ) {

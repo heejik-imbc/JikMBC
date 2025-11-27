@@ -2,15 +2,19 @@ package jik.imbc.detail
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,6 +23,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -177,6 +183,9 @@ private fun MainInfo(
                 onClickRatingModify = onClickRatingModify
             )
         }
+        AnimatedVisibility(visible = ratingExpanded) {
+            RatingModifySection()
+        }
     }
 }
 
@@ -235,7 +244,9 @@ private fun RatingChip(
                     animationSpec = spring(),
                 )
                 Icon(
-                    modifier = Modifier.size(20.dp).rotate(rotation),
+                    modifier = Modifier
+                        .size(20.dp)
+                        .rotate(rotation),
                     imageVector = JbcIcons.Add,
                     contentDescription = if (ratingExpanded) "Close Modify Rating" else "Modify Rating",
                 )
@@ -244,6 +255,46 @@ private fun RatingChip(
     }
 }
 
+@Composable
+private fun RatingModifySection(
+    modifier: Modifier = Modifier
+) {
+
+    val backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    Column(modifier = modifier) {
+        Canvas(
+            modifier = Modifier
+                .padding(end = 28.dp)
+                .size(16.dp)
+                .align(Alignment.End)
+        ) {
+            val path = Path().apply {
+                moveTo(size.width / 2, 0f)
+                lineTo(0f, size.height)
+                lineTo(size.width, size.height)
+                close()
+            }
+            drawPath(
+                path = path,
+                color = backgroundColor
+            )
+        }
+        Row(
+            Modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(color = backgroundColor)
+                .padding(8.dp),
+        ) {
+            repeat(5) {
+                Icon(
+                    modifier = Modifier.size(36.dp),
+                    imageVector = JbcIcons.Star,
+                    contentDescription = "rating"
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun Description(
