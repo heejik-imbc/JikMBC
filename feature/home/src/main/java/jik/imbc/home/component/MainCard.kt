@@ -1,22 +1,28 @@
 package jik.imbc.home.component
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +55,11 @@ internal fun MainCard(
                 .aspectRatio(2 / 3f)
                 .onClickWithPressEffect(onClick = onClick)
                 .clip(shape = RoundedCornerShape(8.dp))
-                .border(1.dp, Color.White, RoundedCornerShape(8.dp)),
+                .border(
+                    width = 1.dp,
+                    color = if (isSystemInDarkTheme()) Color.White else Color.LightGray,
+                    shape = RoundedCornerShape(8.dp)
+                ),
             contentAlignment = Alignment.Center
         ) {
             Poster(
@@ -67,6 +77,7 @@ internal fun MainCard(
                 url = content.posterUrl,
                 description = content.description
             )
+            ContentGradientScrim()
             Content(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -122,9 +133,26 @@ private fun Content(
                 tint = Color(0xFFFFD250),
                 contentDescription = "rating"
             )
+            Spacer(modifier = Modifier.width(2.dp))
             Text(text = "$rating", fontSize = 13.sp)
             Text(text = " • ", fontSize = 13.sp)
             Text(text = releaseYear, fontSize = 13.sp)
         }
     }
+}
+
+@Composable
+private fun ContentGradientScrim(
+    modifier: Modifier = Modifier
+) {
+    val colorStopsOfBottom = arrayOf(
+        0.65f to Color.Transparent,
+        1.0f to MaterialTheme.colorScheme.background,
+    )
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(brush = Brush.verticalGradient(colorStops = colorStopsOfBottom))
+    )
+
 }
