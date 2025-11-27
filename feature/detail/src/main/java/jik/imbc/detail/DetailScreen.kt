@@ -2,6 +2,7 @@ package jik.imbc.detail
 
 import android.widget.Toast
 import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,37 +55,50 @@ private fun DetailScreen(
 ) {
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
-    val animatedContentScope = LocalAnimatedContentScope.current
     val context = LocalContext.current
 
     with(sharedTransitionScope) {
         Column(modifier = modifier.fillMaxSize()) {
             DetailTopBar(onClickBack = {
-                Toast.makeText(
-                    context,
-                    "Back",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
-            AsyncImage(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .sharedElement(
-                            sharedContentState = sharedTransitionScope.rememberSharedContentState(
-                                key = ContentCardSharedElementKey(
-                                    contentId = uiState.content.id,
-                                    type = origin
-                                )
-                            ),
-                            animatedVisibilityScope = animatedContentScope
-                        ),
-                model = uiState.content.thumbnailUrl,
-                contentDescription = uiState.content.description,
-                contentScale = ContentScale.Fit
+            Thumbnail(
+                id = uiState.content.id,
+                origin = origin,
+                imageUrl = uiState.content.thumbnailUrl,
+                description = uiState.content.description
             )
         }
     }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+private fun SharedTransitionScope.Thumbnail(
+    modifier: Modifier = Modifier,
+    id: Int,
+    origin: ContentCardElementOrigin,
+    imageUrl: String,
+    description: String
+) {
+    val animatedContentScope = LocalAnimatedContentScope.current
+
+    AsyncImage(
+        modifier = modifier
+            .fillMaxWidth()
+            .sharedElement(
+                sharedContentState = rememberSharedContentState(
+                    key = ContentCardSharedElementKey(
+                        contentId = id,
+                        type = origin
+                    )
+                ),
+                animatedVisibilityScope = animatedContentScope
+            ),
+        model = imageUrl,
+        contentDescription = description,
+        contentScale = ContentScale.Fit
+    )
 }
 
 
