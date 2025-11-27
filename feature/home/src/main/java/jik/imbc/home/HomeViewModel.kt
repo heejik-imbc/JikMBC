@@ -27,7 +27,7 @@ class HomeViewModel(
         val entertainments = entertainmentsResult.getOrNull() ?: emptyList()
 
         val popularContents =
-            (dramas.shuffled().take(2) + entertainments.shuffled().take(2)).shuffled()
+            (dramas.take(2) + entertainments.take(2)).shuffled()
 
         _uiState.value = HomeUiState.Success(
             popularContents = popularContents,
