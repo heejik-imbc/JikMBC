@@ -50,7 +50,7 @@ internal fun ContentCard(
                 model = content.posterUrl,
                 contentDescription = content.description,
                 alignment = Alignment.Center,
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.FillHeight
             )
         }
     }

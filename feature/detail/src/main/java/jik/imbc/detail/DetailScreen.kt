@@ -503,7 +503,7 @@ private fun RelatedContents(
                     model = content.getPosterUrl,
                     contentDescription = content.description,
                     alignment = Alignment.Center,
-                    contentScale = ContentScale.Fit
+                    contentScale = ContentScale.FillHeight
                 )
             }
         }

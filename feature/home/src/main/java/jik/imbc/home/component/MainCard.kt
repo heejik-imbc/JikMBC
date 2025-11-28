@@ -100,7 +100,7 @@ private fun Poster(
         model = url,
         contentDescription = description,
         alignment = Alignment.Center,
-        contentScale = ContentScale.Fit
+        contentScale = ContentScale.FillHeight
     )
 }
 
