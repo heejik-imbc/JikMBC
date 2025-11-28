@@ -37,7 +37,7 @@ internal fun ContentCard(
                 modifier = Modifier
                     .sizeIn(maxHeight = 160.dp)
                     .aspectRatio(2 / 3f)
-                    .sharedElement(
+                    .sharedBounds(
                         sharedContentState = sharedTransitionScope.rememberSharedContentState(
                             key = ContentCardSharedElementKey(
                                 contentId = content.id,

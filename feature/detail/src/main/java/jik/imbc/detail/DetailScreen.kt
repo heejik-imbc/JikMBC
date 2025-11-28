@@ -162,7 +162,7 @@ private fun SharedTransitionScope.Thumbnail(
     AsyncImage(
         modifier = modifier
             .fillMaxWidth()
-            .sharedElement(
+            .sharedBounds(
                 sharedContentState = rememberSharedContentState(
                     key = ContentCardSharedElementKey(
                         contentId = id,
