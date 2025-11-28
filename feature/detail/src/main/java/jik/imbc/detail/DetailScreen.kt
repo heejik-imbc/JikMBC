@@ -122,11 +122,10 @@ private fun DetailScreen(
             DetailTopBar(onClickBack = {
                 Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
-            Thumbnail(
+            Trailer(
                 id = uiState.content.id,
                 origin = origin,
                 imageUrl = uiState.content.thumbnailUrl,
-                description = uiState.content.description
             )
             EffectColumn(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -166,16 +165,15 @@ private fun DetailScreen(
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-private fun SharedTransitionScope.Thumbnail(
+private fun SharedTransitionScope.Trailer(
     modifier: Modifier = Modifier,
     id: Int,
     origin: ContentCardElementOrigin,
     imageUrl: String,
-    description: String
 ) {
     val animatedContentScope = LocalAnimatedContentScope.current
 
-    AsyncImage(
+    jik.imbc.videoplayer.trailer.Trailer(
         modifier = modifier
             .fillMaxWidth()
             .sharedBounds(
@@ -187,9 +185,8 @@ private fun SharedTransitionScope.Thumbnail(
                 ),
                 animatedVisibilityScope = animatedContentScope
             ),
-        model = imageUrl,
-        contentDescription = description,
-        contentScale = ContentScale.FillWidth,
+        thumbnailUrl = imageUrl,
+        trailerUrl = ""
     )
 }
 
