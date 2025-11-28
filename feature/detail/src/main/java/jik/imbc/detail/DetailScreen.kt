@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -66,6 +65,7 @@ import jik.imbc.detail.component.DetailTopBar
 import jik.imbc.detail.model.DetailUiState
 import jik.imbc.ui.action.onClickWithPressEffect
 import jik.imbc.ui.count.AnimatedCounter
+import jik.imbc.ui.layout.EffectColumn
 import jik.imbc.ui.transition.ContentCardElementOrigin
 import jik.imbc.ui.transition.ContentCardSharedElementKey
 import jik.imbc.ui.transition.LocalAnimatedContentScope
@@ -111,7 +111,7 @@ private fun DetailScreen(
     var ratingExpanded by rememberSaveable { mutableStateOf(false) }
 
     with(sharedTransitionScope) {
-        Column(modifier = modifier.fillMaxSize()) {
+        Column(modifier = modifier) {
             DetailTopBar(onClickBack = {
                 Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
@@ -121,9 +121,15 @@ private fun DetailScreen(
                 imageUrl = uiState.content.thumbnailUrl,
                 description = uiState.content.description
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            EffectColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f))
+                    .padding(12.dp),
+                delayPerItem = 400
+            ) {
                 MainInfo(
+                    modifier = Modifier,
                     title = uiState.content.title,
                     rating = uiState.content.rating.toDouble(),
                     ratingCount = uiState.content.ratingCount,
@@ -133,8 +139,8 @@ private fun DetailScreen(
                     toggleRatingModify = { ratingExpanded = !ratingExpanded },
                     onRating = onRating
                 )
-                Spacer(modifier = Modifier.height(12.dp))
                 Description(
+                    modifier = Modifier.padding(vertical = 12.dp),
                     description = uiState.content.description
                 )
             }
@@ -272,7 +278,11 @@ private fun RatingChip(
             Text(text = "$rating", fontSize = 13.sp)
             Spacer(modifier = Modifier.width(4.dp))
             AnimatedCounter(target = ratingCount) { animatedRatingCount ->
-                Text(text = "(${animatedRatingCount})", fontSize = 13.sp, color = Color(0xFF65A1EC))
+                Text(
+                    text = "(${animatedRatingCount})",
+                    fontSize = 13.sp,
+                    color = Color(0xFF65A1EC)
+                )
             }
             VerticalDivider(
                 Modifier
@@ -315,7 +325,13 @@ private fun RatingChip(
             if (mode == RatingModifyMode.Modify) {
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "(${String.format(Locale.getDefault(), "%.1f", animatedUserRating)})",
+                    text = "(${
+                        String.format(
+                            Locale.getDefault(),
+                            "%.1f",
+                            animatedUserRating
+                        )
+                    })",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color(0xFFFFD250)
