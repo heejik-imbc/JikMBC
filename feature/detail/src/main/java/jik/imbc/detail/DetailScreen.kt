@@ -1,9 +1,11 @@
 package jik.imbc.detail
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -44,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
@@ -66,6 +69,7 @@ import jik.imbc.ui.transition.ContentCardElementOrigin
 import jik.imbc.ui.transition.ContentCardSharedElementKey
 import jik.imbc.ui.transition.LocalAnimatedContentScope
 import jik.imbc.ui.transition.LocalSharedTransitionScope
+import java.util.Locale
 
 
 @Composable
@@ -195,6 +199,7 @@ private fun MainInfo(
                 rating = rating,
                 ratingCount = ratingCount,
                 ratingExpanded = ratingExpanded,
+                userRating = userRating,
                 toggleRatingModify = {
                     toggleRatingModify()
                     ratingSectionExitTransition = defaultExitTransition
@@ -227,17 +232,35 @@ private fun ReleaseYearChip(
 }
 
 
+enum class RatingModifyMode(val iconRes: ImageVector) {
+    CanAdd(iconRes = JbcIcons.Add),
+    Modify(iconRes = JbcIcons.Refresh)
+}
+
+
 @Composable
 private fun RatingChip(
     modifier: Modifier = Modifier,
     rating: Double,
     ratingCount: Int,
     ratingExpanded: Boolean,
+    userRating: Float?,
     toggleRatingModify: () -> Unit
 ) {
+    Log.d("heejik", "userRating: $userRating")
+
+    val mode = if (userRating != null) {
+        RatingModifyMode.Modify
+    } else {
+        RatingModifyMode.CanAdd
+    }
+    val animatedUserRating by animateFloatAsState(userRating ?: 0f)
 
     JbcChip(modifier = modifier.height(intrinsicSize = IntrinsicSize.Max)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.animateContentSize(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Icon(
                 modifier = Modifier.size(20.dp),
                 imageVector = JbcIcons.Star,
@@ -265,16 +288,34 @@ private fun RatingChip(
                         onClick = toggleRatingModify
                     )
             ) {
-                val rotation by animateFloatAsState(
-                    targetValue = if (ratingExpanded) 45f else 0f,
-                    animationSpec = spring(),
-                )
-                Icon(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .rotate(rotation),
-                    imageVector = JbcIcons.Add,
-                    contentDescription = if (ratingExpanded) "Close Modify Rating" else "Modify Rating",
+                // 유저 별점이 있으면 별점 표시, 없으면 별점 수정 아이콘 표시
+                if (mode == RatingModifyMode.CanAdd) {
+                    val rotation by animateFloatAsState(
+                        targetValue = if (ratingExpanded) 45f else 0f,
+                        animationSpec = spring(),
+                    )
+                    Icon(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .rotate(rotation),
+                        imageVector = mode.iconRes,
+                        contentDescription = if (ratingExpanded) "별점 추가 닫기" else "별점 추가하기",
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        imageVector = mode.iconRes,
+                        contentDescription = "별점 수정하기",
+                    )
+                }
+            }
+            if (mode == RatingModifyMode.Modify) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "(${String.format(Locale.getDefault(), "%.1f", animatedUserRating)})",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color(0xFFFFD250)
                 )
             }
         }

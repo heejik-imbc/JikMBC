@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.StarHalf
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Star
 
 object JbcIcons {
@@ -15,4 +16,6 @@ object JbcIcons {
     val ArrowBack = Icons.AutoMirrored.Rounded.ArrowBack
 
     val Add = Icons.Rounded.Add
+
+    val Refresh = Icons.Rounded.Refresh
 }
