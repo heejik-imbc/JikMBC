@@ -22,7 +22,7 @@ import jik.imbc.videoplayer.icons.VideoPlayerIcons
 fun Thumbnail(
     modifier: Modifier = Modifier,
     imageUrl: String,
-    play: () -> Unit
+    start: () -> Unit
 ) {
     Box(modifier = modifier) {
         AsyncImage(
@@ -36,7 +36,7 @@ fun Thumbnail(
                 .clip(CircleShape)
                 .background(color = Color.Black.copy(alpha = 0.6f))
                 .align(Alignment.Center)
-                .clickable(onClick = play),
+                .clickable(onClick = start),
         ) {
             Icon(
                 modifier = Modifier

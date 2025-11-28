@@ -55,4 +55,8 @@ dependencies {
 
     // coil
     implementation(libs.compose.coil)
+
+    // exoplayer
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
 }
