@@ -118,7 +118,7 @@ private fun DetailScreen(
     var ratingExpanded by rememberSaveable { mutableStateOf(false) }
 
     with(sharedTransitionScope) {
-        Column(modifier = modifier.verticalScroll(rememberScrollState())) {
+        Column(modifier = modifier) {
             DetailTopBar(onClickBack = {
                 Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
@@ -129,6 +129,7 @@ private fun DetailScreen(
                 description = uiState.content.description
             )
             EffectColumn(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
                 delayPerItem = 600
             ) {
                 EffectColumn(
