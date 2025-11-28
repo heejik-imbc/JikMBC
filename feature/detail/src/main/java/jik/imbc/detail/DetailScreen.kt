@@ -129,32 +129,36 @@ private fun DetailScreen(
                 description = uiState.content.description
             )
             EffectColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f))
-                    .padding(12.dp),
-                delayPerItem = 400
+                delayPerItem = 600
             ) {
-                MainInfo(
-                    modifier = Modifier,
-                    title = uiState.content.title,
-                    rating = uiState.content.rating.toDouble(),
-                    ratingCount = uiState.content.ratingCount,
-                    releaseYear = uiState.content.releaseYear,
-                    userRating = uiState.content.userRating,
-                    ratingExpanded = ratingExpanded,
-                    toggleRatingModify = { ratingExpanded = !ratingExpanded },
-                    onRating = onRating
-                )
-                Description(
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    description = uiState.content.description
+                EffectColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.04f))
+                        .padding(12.dp),
+                    delayPerItem = 300
+                ) {
+                    MainInfo(
+                        modifier = Modifier,
+                        title = uiState.content.title,
+                        rating = uiState.content.rating.toDouble(),
+                        ratingCount = uiState.content.ratingCount,
+                        releaseYear = uiState.content.releaseYear,
+                        userRating = uiState.content.userRating,
+                        ratingExpanded = ratingExpanded,
+                        toggleRatingModify = { ratingExpanded = !ratingExpanded },
+                        onRating = onRating
+                    )
+                    Description(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        description = uiState.content.description
+                    )
+                }
+                RelatedContents(
+                    modifier = Modifier.padding(12.dp),
+                    contents = uiState.relatedContents
                 )
             }
-            RelatedContents(
-                modifier = Modifier.padding(12.dp),
-                contents = uiState.relatedContents
-            )
         }
     }
 }
