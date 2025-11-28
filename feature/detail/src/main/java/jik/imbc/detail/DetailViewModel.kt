@@ -23,7 +23,7 @@ class DetailViewModel(
     private val contentId = savedStateHandle.toRoute<DetailRoute>().contentId
     private val _uiState = MutableStateFlow<DetailUiState>(DetailUiState.Loading)
 
-    val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<DetailUiState> = _uiState.asStateFlow() // todo: Flow로 변경
 
     init {
         getContentDetail()
@@ -31,12 +31,20 @@ class DetailViewModel(
 
     private fun getContentDetail() {
         val content = contentRepository.getContentById(contentId).getOrNull()
-
         if (content != null) {
             _uiState.value = DetailUiState.Success(content = content)
         } else {
             // Handle error case as needed
         }
+    }
+
+    internal fun leaveRating(float: Float) {
+        contentRepository.leaveRating(contentId, float)
+            .onSuccess {
+                getContentDetail()
+            }.onFailure {
+                // Handle error case as needed
+            }
     }
 
     companion object {

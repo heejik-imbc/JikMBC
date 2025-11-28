@@ -38,4 +38,14 @@ class ContentRepositoryImpl : ContentRepository {
 
         return Result.success(content)
     }
+
+    override fun leaveRating(contentId: Int, rating: Float): Result<Unit> {
+        val result: Result<Unit> =
+            (MockDramas + MockEntertainment).find { it.id == contentId }?.let {
+                it.userRating = rating
+                Result.success(Unit)
+            } ?: Result.failure(IllegalArgumentException("Content not found"))
+
+        return result
+    }
 }

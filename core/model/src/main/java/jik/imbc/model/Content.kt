@@ -10,6 +10,7 @@ data class Content(
     val rating: String,
     val releaseDate: String,
     val ratingCount: Int = 0,
+    var userRating: Float? = null
 ) {
     val releaseYear: String
         get() = releaseDate.take(4)

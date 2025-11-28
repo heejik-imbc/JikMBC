@@ -9,12 +9,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +30,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,7 +42,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -78,7 +83,8 @@ fun DetailRoute(
             DetailScreen(
                 modifier = modifier,
                 uiState = uiState,
-                origin = origin
+                origin = origin,
+                onRating = viewModel::leaveRating
             )
         }
     }
@@ -89,7 +95,8 @@ fun DetailRoute(
 private fun DetailScreen(
     modifier: Modifier = Modifier,
     uiState: DetailUiState.Success,
-    origin: ContentCardElementOrigin
+    origin: ContentCardElementOrigin,
+    onRating: (Float) -> Unit
 ) {
 
     val sharedTransitionScope = LocalSharedTransitionScope.current
@@ -114,11 +121,12 @@ private fun DetailScreen(
                     rating = uiState.content.rating.toDouble(),
                     ratingCount = uiState.content.ratingCount,
                     releaseYear = uiState.content.releaseYear,
+                    userRating = uiState.content.userRating,
                     ratingExpanded = ratingExpanded,
-                    onClickRatingModify = {
-                        ratingExpanded = !ratingExpanded
-                    }
+                    onClickRatingModify = { ratingExpanded = !ratingExpanded },
+                    onRating = onRating
                 )
+                Spacer(modifier = Modifier.height(12.dp))
                 Description(
                     description = uiState.content.description
                 )
@@ -164,7 +172,9 @@ private fun MainInfo(
     ratingCount: Int,
     releaseYear: String,
     ratingExpanded: Boolean,
-    onClickRatingModify: () -> Unit
+    userRating: Float?,
+    onClickRatingModify: () -> Unit,
+    onRating: (Float) -> Unit
 ) {
     Column(modifier = modifier) {
         Text(
@@ -184,7 +194,10 @@ private fun MainInfo(
             )
         }
         AnimatedVisibility(visible = ratingExpanded) {
-            RatingModifySection()
+            RatingModifySection(
+                userRating = userRating,
+                onRating = onRating
+            )
         }
     }
 }
@@ -257,10 +270,12 @@ private fun RatingChip(
 
 @Composable
 private fun RatingModifySection(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    userRating: Float?,
+    onRating: (Float) -> Unit
 ) {
-
     val backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+
     Column(modifier = modifier) {
         Canvas(
             modifier = Modifier
@@ -279,19 +294,83 @@ private fun RatingModifySection(
                 color = backgroundColor
             )
         }
-        Row(
-            Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(color = backgroundColor)
-                .padding(8.dp),
-        ) {
-            repeat(5) {
-                Icon(
-                    modifier = Modifier.size(36.dp),
-                    imageVector = JbcIcons.Star,
-                    contentDescription = "rating"
+        RatingModifySectionContent(
+            userRating = userRating,
+            onRating = onRating
+        )
+    }
+}
+
+private enum class StarState { Full, Half, Empty }
+
+
+@Composable
+private fun RatingModifySectionContent(
+    modifier: Modifier = Modifier,
+    userRating: Float?,
+    onRating: (Float) -> Unit,
+) {
+    val maxRating = 5f
+    val backgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+    var widthPx by remember { mutableIntStateOf(0) }
+    var isDragging by remember { mutableStateOf(false) }
+    var newRating by remember { mutableFloatStateOf(userRating ?: maxRating) }
+
+    val displayRating = if (isDragging) newRating else userRating ?: maxRating
+
+    fun updateRating(x: Float) {
+        val clampedX = x.coerceIn(0f, widthPx.toFloat())
+
+        val calculatedRating = (clampedX / widthPx) * 5f
+        newRating = (calculatedRating * 2).toInt() / 2f // 가까운 0.5 단위로 반올림
+    }
+
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(color = backgroundColor)
+            .padding(8.dp)
+            .onSizeChanged { widthPx = it.width }
+            .pointerInput(key1 = Unit) {
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        isDragging = true
+                        updateRating(offset.x)
+                    },
+                    onDragEnd = {
+                        isDragging = false
+                        onRating(newRating)
+                    },
+                    onDragCancel = {
+                        isDragging = false
+                        newRating = userRating ?: maxRating
+                    },
+                    onDrag = { change, _ ->
+                        updateRating(change.position.x)
+                    }
                 )
             }
+    ) {
+        repeat(5) {
+            val starState = when {
+                displayRating >= it + 1 -> StarState.Full
+                displayRating >= it + 0.5f -> StarState.Half
+                else -> StarState.Empty
+            }
+
+            Icon(
+                modifier = Modifier.size(36.dp),
+                imageVector = when (starState) {
+                    StarState.Full, StarState.Empty -> JbcIcons.Star
+                    StarState.Half -> JbcIcons.StarHalf
+                },
+                contentDescription = "rating",
+                tint = if (starState == StarState.Empty) {
+                    Color.Gray.copy(alpha = 0.4f)
+                } else {
+                    Color(0xFFFFD250)
+                }
+            )
         }
     }
 }
@@ -301,7 +380,12 @@ private fun Description(
     modifier: Modifier = Modifier,
     description: String
 ) {
-
+    Text(
+        modifier = modifier,
+        text = description,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    )
 }
 
 
@@ -310,6 +394,7 @@ private fun Description(
 private fun DetailScreenPreview() {
     DetailScreen(
         uiState = DetailUiState.Success(MockDramas.first()),
-        origin = ContentCardElementOrigin.MAIN_CARD
+        origin = ContentCardElementOrigin.MAIN_CARD,
+        onRating = {}
     )
 }
