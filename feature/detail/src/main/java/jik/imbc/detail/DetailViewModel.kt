@@ -27,12 +27,26 @@ class DetailViewModel(
 
     init {
         getContentDetail()
+        getRelatedContents()
     }
 
     private fun getContentDetail() {
         val content = contentRepository.getContentById(contentId).getOrNull()
         if (content != null) {
             _uiState.value = DetailUiState.Success(content = content)
+        } else {
+            // Handle error case as needed
+        }
+    }
+
+    private fun getRelatedContents() {
+        val relatedContents = contentRepository.getRelatedContents(contentId).getOrNull()
+
+        if (relatedContents != null) {
+            val currentState = _uiState.value
+            if (currentState is DetailUiState.Success) {
+                _uiState.value = currentState.copy(relatedContents = relatedContents)
+            }
         } else {
             // Handle error case as needed
         }

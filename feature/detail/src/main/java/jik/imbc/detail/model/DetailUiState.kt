@@ -7,6 +7,7 @@ sealed interface DetailUiState {
     data object Loading : DetailUiState
 
     data class Success(
-        val content: Content
+        val content: Content,
+        val relatedContents: List<Content> = emptyList()
     ) : DetailUiState
 }

@@ -12,8 +12,15 @@ data class Content(
     val ratingCount: Int = 0,
     var userRating: Float? = null
 ) {
+    private val baseUrl = "https://image.tmdb.org/t/p/w500"
     val releaseYear: String
         get() = releaseDate.take(4)
+
+    val getPosterUrl: String
+        get() = "$baseUrl/$posterUrl"
+
+    val getThumbnailUrl: String
+        get() = "$baseUrl/$thumbnailUrl"
 }
 
 enum class ContentCategory {

@@ -15,19 +15,26 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -63,6 +70,7 @@ import jik.imbc.designsystem.icon.JbcIcons
 import jik.imbc.designsystem.state.EmptyLoading
 import jik.imbc.detail.component.DetailTopBar
 import jik.imbc.detail.model.DetailUiState
+import jik.imbc.model.Content
 import jik.imbc.ui.action.onClickWithPressEffect
 import jik.imbc.ui.count.AnimatedCounter
 import jik.imbc.ui.layout.EffectColumn
@@ -111,7 +119,7 @@ private fun DetailScreen(
     var ratingExpanded by rememberSaveable { mutableStateOf(false) }
 
     with(sharedTransitionScope) {
-        Column(modifier = modifier) {
+        Column(modifier = modifier.verticalScroll(rememberScrollState())) {
             DetailTopBar(onClickBack = {
                 Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
@@ -144,6 +152,10 @@ private fun DetailScreen(
                     description = uiState.content.description
                 )
             }
+            RelatedContents(
+                modifier = Modifier.padding(12.dp),
+                contents = uiState.relatedContents
+            )
         }
     }
 }
@@ -173,7 +185,7 @@ private fun SharedTransitionScope.Thumbnail(
             ),
         model = imageUrl,
         contentDescription = description,
-        contentScale = ContentScale.Fit
+        contentScale = ContentScale.FillWidth,
     )
 }
 
@@ -459,6 +471,43 @@ private fun Description(
         fontSize = 14.sp,
         lineHeight = 20.sp
     )
+}
+
+@Composable
+private fun RelatedContents(
+    modifier: Modifier = Modifier,
+    contents: List<Content>
+) {
+    if (contents.isEmpty()) return
+
+    Column(modifier = modifier) {
+        Text(
+            text = "유사한 콘텐츠",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            contents.forEach { content ->
+                AsyncImage(
+                    modifier = Modifier
+                        .sizeIn(maxHeight = 160.dp)
+                        .aspectRatio(2 / 3f)
+                        .onClickWithPressEffect(onClick = { })
+                        .clip(RoundedCornerShape(4.dp)),
+                    model = content.getPosterUrl,
+                    contentDescription = content.description,
+                    alignment = Alignment.Center,
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
+    }
 }
 
 

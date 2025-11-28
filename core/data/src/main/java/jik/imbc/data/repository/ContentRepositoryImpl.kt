@@ -28,6 +28,10 @@ class ContentRepositoryImpl : ContentRepository {
         })
     }
 
+    override fun getRelatedContents(contentId: Int): Result<List<Content>> {
+        return Result.success((MockDramas + MockEntertainment).shuffled())
+    }
+
     override fun getContentById(contentId: Int): Result<Content> {
         val allContents =
             getEntertainmentContents().getOrNull().orEmpty() +
