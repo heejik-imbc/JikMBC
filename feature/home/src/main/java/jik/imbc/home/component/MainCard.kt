@@ -53,6 +53,15 @@ internal fun MainCard(
             modifier = modifier
                 .sizeIn(maxHeight = 300.dp)
                 .aspectRatio(2 / 3f)
+                .sharedElement(
+                    sharedContentState = sharedTransitionScope.rememberSharedContentState(
+                        key = ContentCardSharedElementKey(
+                            contentId = content.id,
+                            type = ContentCardElementOrigin.MAIN_CARD
+                        )
+                    ),
+                    animatedVisibilityScope = animatedContentScope
+                )
                 .onClickWithPressEffect(onClick = onClick)
                 .clip(shape = RoundedCornerShape(8.dp))
                 .border(
@@ -63,17 +72,7 @@ internal fun MainCard(
             contentAlignment = Alignment.Center
         ) {
             Poster(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .sharedElement(
-                        sharedContentState = sharedTransitionScope.rememberSharedContentState(
-                            key = ContentCardSharedElementKey(
-                                contentId = content.id,
-                                type = ContentCardElementOrigin.MAIN_CARD
-                            )
-                        ),
-                        animatedVisibilityScope = animatedContentScope
-                    ),
+                modifier = Modifier.fillMaxSize(),
                 url = content.posterUrl,
                 description = content.description
             )
