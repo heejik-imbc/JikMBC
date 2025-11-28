@@ -1,12 +1,14 @@
 package jik.imbc.detail
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -123,7 +125,7 @@ private fun DetailScreen(
                     releaseYear = uiState.content.releaseYear,
                     userRating = uiState.content.userRating,
                     ratingExpanded = ratingExpanded,
-                    onClickRatingModify = { ratingExpanded = !ratingExpanded },
+                    toggleRatingModify = { ratingExpanded = !ratingExpanded },
                     onRating = onRating
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -173,9 +175,12 @@ private fun MainInfo(
     releaseYear: String,
     ratingExpanded: Boolean,
     userRating: Float?,
-    onClickRatingModify: () -> Unit,
+    toggleRatingModify: () -> Unit,
     onRating: (Float) -> Unit
 ) {
+    val defaultExitTransition = fadeOut() + shrinkVertically()
+    var ratingSectionExitTransition by remember { mutableStateOf(defaultExitTransition) }
+
     Column(modifier = modifier) {
         Text(
             text = title,
@@ -190,13 +195,22 @@ private fun MainInfo(
                 rating = rating,
                 ratingCount = ratingCount,
                 ratingExpanded = ratingExpanded,
-                onClickRatingModify = onClickRatingModify
+                toggleRatingModify = {
+                    toggleRatingModify()
+                    ratingSectionExitTransition = defaultExitTransition
+                }
             )
         }
-        AnimatedVisibility(visible = ratingExpanded) {
+        AnimatedVisibility(visible = ratingExpanded, exit = ratingSectionExitTransition) {
             RatingModifySection(
                 userRating = userRating,
-                onRating = onRating
+                onRating = {
+                    onRating(it)
+                    ratingSectionExitTransition =
+                        fadeOut(animationSpec = tween(durationMillis = 1000)) +
+                                shrinkVertically(animationSpec = tween(durationMillis = 1000))
+                    toggleRatingModify()
+                }
             )
         }
     }
@@ -219,10 +233,9 @@ private fun RatingChip(
     rating: Double,
     ratingCount: Int,
     ratingExpanded: Boolean,
-    onClickRatingModify: () -> Unit
+    toggleRatingModify: () -> Unit
 ) {
 
-    Log.d("heejik", "ratingExpanded: $ratingExpanded")
     JbcChip(modifier = modifier.height(intrinsicSize = IntrinsicSize.Max)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
@@ -249,7 +262,7 @@ private fun RatingChip(
                     .onClickWithPressEffect(
                         scaleFactor = 1f,
                         pressColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
-                        onClick = onClickRatingModify
+                        onClick = toggleRatingModify
                     )
             ) {
                 val rotation by animateFloatAsState(
