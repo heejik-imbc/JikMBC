@@ -18,7 +18,6 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -313,7 +312,7 @@ private fun RatingChip(
             ) {
                 AnimatedContent(targetState = mode) {
                     // 유저 별점이 있으면 별점 표시, 없으면 별점 수정 아이콘 표시
-                    if (it == RatingModifyMode.CanAdd) {
+                    if (it == RatingModifyMode.CanAdd || ratingExpanded) {
                         val rotation by animateFloatAsState(
                             targetValue = if (ratingExpanded) 45f else 0f,
                             animationSpec = spring(),
@@ -322,7 +321,7 @@ private fun RatingChip(
                             modifier = Modifier
                                 .size(20.dp)
                                 .rotate(rotation),
-                            imageVector = it.iconRes,
+                            imageVector = RatingModifyMode.CanAdd.iconRes,
                             contentDescription = if (ratingExpanded) "별점 추가 닫기" else "별점 추가하기",
                         )
                     } else {
