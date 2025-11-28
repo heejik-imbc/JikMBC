@@ -2,6 +2,7 @@ package jik.imbc.detail
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -288,25 +289,27 @@ private fun RatingChip(
                         onClick = toggleRatingModify
                     )
             ) {
-                // 유저 별점이 있으면 별점 표시, 없으면 별점 수정 아이콘 표시
-                if (mode == RatingModifyMode.CanAdd) {
-                    val rotation by animateFloatAsState(
-                        targetValue = if (ratingExpanded) 45f else 0f,
-                        animationSpec = spring(),
-                    )
-                    Icon(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .rotate(rotation),
-                        imageVector = mode.iconRes,
-                        contentDescription = if (ratingExpanded) "별점 추가 닫기" else "별점 추가하기",
-                    )
-                } else {
-                    Icon(
-                        modifier = Modifier.size(20.dp),
-                        imageVector = mode.iconRes,
-                        contentDescription = "별점 수정하기",
-                    )
+                AnimatedContent(targetState = mode) {
+                    // 유저 별점이 있으면 별점 표시, 없으면 별점 수정 아이콘 표시
+                    if (it == RatingModifyMode.CanAdd) {
+                        val rotation by animateFloatAsState(
+                            targetValue = if (ratingExpanded) 45f else 0f,
+                            animationSpec = spring(),
+                        )
+                        Icon(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .rotate(rotation),
+                            imageVector = it.iconRes,
+                            contentDescription = if (ratingExpanded) "별점 추가 닫기" else "별점 추가하기",
+                        )
+                    } else {
+                        Icon(
+                            modifier = Modifier.size(20.dp),
+                            imageVector = it.iconRes,
+                            contentDescription = "별점 수정하기",
+                        )
+                    }
                 }
             }
             if (mode == RatingModifyMode.Modify) {
