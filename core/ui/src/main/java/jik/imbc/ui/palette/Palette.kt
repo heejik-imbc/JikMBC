@@ -33,7 +33,8 @@ suspend fun extractRepresentativeColor(
         val vibrant = palette.getVibrantColor(defaultColor)
         val dominantColor = palette.getDominantColor(defaultColor)
 
-        return if (vibrant != defaultColor) vibrant else dominantColor
+//        return if (vibrant != defaultColor) vibrant else dominantColor
+        return dominantColor
     }
 
     return defaultColor
