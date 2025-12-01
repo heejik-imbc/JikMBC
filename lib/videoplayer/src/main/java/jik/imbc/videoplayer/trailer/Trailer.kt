@@ -44,7 +44,7 @@ fun Trailer(
                 )
             }
 
-            TrailerPlayerState.PLAYING, TrailerPlayerState.PAUSED -> {
+            else -> {
                 TrailerPlayerView(
                     player = viewModel.player.player,
                     playOrPause = viewModel::playOrPause

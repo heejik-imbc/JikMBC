@@ -1,5 +1,7 @@
 package jik.imbc.videoplayer.player.trailer
 
+import android.annotation.SuppressLint
+import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 
 internal val trailerPlayerListener: (stateChange: (TrailerPlayerState) -> Unit) -> Player.Listener =
@@ -8,9 +10,18 @@ internal val trailerPlayerListener: (stateChange: (TrailerPlayerState) -> Unit) 
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
 
-                when {
-                    playbackState != 3 -> it(TrailerPlayerState.INITIAL)
+                @SuppressLint("SwitchIntDef")
+                when (playbackState) {
+                    Player.STATE_IDLE, Player.STATE_ENDED -> it(TrailerPlayerState.INITIAL)
                 }
+            }
+
+            override fun onMediaItemTransition(
+                mediaItem: MediaItem?,
+                reason: Int
+            ) {
+                super.onMediaItemTransition(mediaItem, reason)
+                it(TrailerPlayerState.CAN_PLAY)
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {

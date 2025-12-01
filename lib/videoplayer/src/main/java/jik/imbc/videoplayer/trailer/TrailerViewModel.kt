@@ -16,7 +16,7 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
     val player: TrailerPlayer = TrailerPlayer(context = application)
     val uiState: StateFlow<TrailerUiState> = player.state
         .map { playerState -> TrailerUiState(playerState = playerState) }
-        .stateIn(viewModelScope, SharingStarted.Lazily, TrailerUiState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
 
     fun start(url: String) {
         player.start(url = url)

@@ -186,7 +186,7 @@ private fun SharedTransitionScope.Trailer(
                 animatedVisibilityScope = animatedContentScope
             ),
         thumbnailUrl = imageUrl,
-        trailerUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        trailerUrl = "https://rr2---sn-ab02a0nfpgxapox-bh26e.googlevideo.com/videoplayback?expire=1764572314&ei=OugsabfEEY_K2roP1-TkiAw&ip=211.171.60.146&id=o-AJCY1JN_Ws8JP-zyxvM3DKvaK8B-QQjQgeKFHEJcQBE4&itag=18&source=youtube&requiressl=yes&xpc=EgVo2aDSNQ%3D%3D&cps=58&met=1764550714%2C&mh=j8&mm=31%2C29&mn=sn-ab02a0nfpgxapox-bh26e%2Csn-ab02a0nfpgxapox-bh2s6&ms=au%2Crdu&mv=m&mvi=2&pl=24&rms=au%2Cau&initcwndbps=3632500&bui=AdEuB5RQTAgsrZB17Vxx0y_ARsGwmbkxnlXIbcMWUqT88vL0gwlsIcvml__KvdPJEBawxWMo9PzoI8TU&spc=6b0G_LZ02dYbT2WGHGU8FMKy_QmMXE7yqNtzkEQ7I01-xEwtwNKyiq8tvKrN4idU4_xCG6yd&vprv=1&svpuc=1&mime=video%2Fmp4&ns=B1qrmvFnnYVuGGA0twvtwUsQ&rqh=1&gir=yes&clen=4843153&ratebypass=yes&dur=92.368&lmt=1752014802013980&mt=1764550382&fvip=1&lmw=1&fexp=51557447%2C51565116%2C51565682%2C51580970&c=TVHTML5&sefc=1&txp=4538534&n=fykKfQjBBNaOtA&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cxpc%2Cbui%2Cspc%2Cvprv%2Csvpuc%2Cmime%2Cns%2Crqh%2Cgir%2Cclen%2Cratebypass%2Cdur%2Clmt&sig=AJfQdSswRgIhALXUNN69AeLTHSqBQzHmSV98iHgnE5oIXO_Wv_cLYp7DAiEAx-ZkotGcJKPCoELd5oMQmwwc5c5jTfbOcs-KmKEwQgk%3D&lsparams=cps%2Cmet%2Cmh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Crms%2Cinitcwndbps&lsig=APaTxxMwRAIgS26dUaNa6NDxsXZZTLJKORukTqqDd2bRqWlvEjEoW4ECIBDnIxgzDqJYvvHUPi71jkP1k7_-EvPck8RKR7y6-U1I"
     )
 }
 

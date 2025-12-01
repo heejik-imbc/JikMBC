@@ -1,5 +1,5 @@
 package jik.imbc.videoplayer.player.trailer
 
 enum class TrailerPlayerState {
-    INITIAL, PLAYING, PAUSED
+    INITIAL, CAN_PLAY, PLAYING, PAUSED
 }
