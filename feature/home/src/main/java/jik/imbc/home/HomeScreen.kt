@@ -14,6 +14,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,7 +34,7 @@ import jik.imbc.home.component.ContentCard
 import jik.imbc.home.model.HomeUiState
 import jik.imbc.model.Content
 import jik.imbc.ui.layout.EffectColumn
-import jik.imbc.ui.palette.ExtractRepresentativeColor
+import jik.imbc.ui.palette.extractRepresentativeColor
 import jik.imbc.ui.transition.ContentCardElementOrigin
 
 @Composable
@@ -65,12 +67,17 @@ internal fun HomeScreen(
     uiState: HomeUiState.Success,
     onClickContent: (id: Int, origin: ContentCardElementOrigin) -> Unit
 ) {
-    var backgroundColor by rememberSaveable { mutableIntStateOf(Color.Transparent.toArgb()) }
+    val context = LocalContext.current
     val mainPagerState = rememberPagerState(pageCount = { uiState.popularContents.size })
 
+    var backgroundColor by rememberSaveable { mutableIntStateOf(Color.Transparent.toArgb()) }
     val currentMainContent = uiState.popularContents[mainPagerState.currentPage]
-    ExtractRepresentativeColor(imageUrl = currentMainContent.thumbnailUrl) {
-        backgroundColor = it.toArgb()
+
+    LaunchedEffect(key1 = currentMainContent.thumbnailUrl) {
+        backgroundColor = extractRepresentativeColor(
+            context = context,
+            imageUrl = currentMainContent.thumbnailUrl
+        )
     }
 
     val animatedBackgroundColor by animateColorAsState(

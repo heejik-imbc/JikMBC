@@ -1,43 +1,40 @@
 package jik.imbc.ui.palette
 
-import androidx.compose.runtime.Composable
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
+import coil.Coil
 import coil.request.ImageRequest
-import coil.size.Size
+import coil.request.SuccessResult
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-
-@Composable
-fun ExtractRepresentativeColor(imageUrl: String, onColorExtracted: (Color) -> Unit) {
-    val context = LocalContext.current
+suspend fun extractRepresentativeColor(
+    context: Context,
+    imageUrl: String
+): Int {
     val defaultColor = Color.Transparent.toArgb()
 
-    rememberAsyncImagePainter(
-        model = ImageRequest.Builder(context)
-            .data(imageUrl)
-            .size(Size.ORIGINAL)
-            .allowHardware(false)
-            .build(),
-        onState = { painterState ->
-            if (painterState is AsyncImagePainter.State.Success) {
-                val bitmap = painterState.result.drawable.toBitmap()
+    val request = ImageRequest.Builder(context)
+        .data(imageUrl)
+        .allowHardware(false)
+        .build()
 
-                Palette.from(bitmap).generate { palette ->
-                    palette?.let {
-                        val vibrantColor = it.getVibrantColor(defaultColor)
-                        if (vibrantColor != defaultColor) {
-                            onColorExtracted(Color(vibrantColor))
-                        } else {
-                            onColorExtracted(Color(it.getDominantColor(defaultColor)))
-                        }
-                    }
-                }
-            }
-        }
-    )
+    val result = withContext(Dispatchers.IO) {
+        Coil.imageLoader(context).execute(request)
+    }
+
+    if (result is SuccessResult) {
+        val bitmap = result.drawable.toBitmap()
+        val palette = Palette.from(bitmap).generate()
+
+        val vibrant = palette.getVibrantColor(defaultColor)
+        val dominantColor = palette.getDominantColor(defaultColor)
+
+        return if (vibrant != defaultColor) vibrant else dominantColor
+    }
+
+    return defaultColor
 }
