@@ -22,14 +22,20 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,10 +61,14 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.coerceAtLeast
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -116,19 +126,23 @@ private fun DetailScreen(
     val sharedTransitionScope = LocalSharedTransitionScope.current
     val context = LocalContext.current
     var ratingExpanded by rememberSaveable { mutableStateOf(false) }
+    var fakeTrailerY by rememberSaveable { mutableFloatStateOf(0f) }
 
     with(sharedTransitionScope) {
-        Column(modifier = modifier) {
+        Column(
+            modifier = modifier
+                .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Top))
+                .verticalScroll(rememberScrollState())
+        ) {
             DetailTopBar(onClickBack = {
                 Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
-            Trailer(
-                id = uiState.content.id,
-                origin = origin,
-                imageUrl = uiState.content.thumbnailUrl,
+            FakeTrailer(
+                modifier = Modifier.onGloballyPositioned {
+                    fakeTrailerY = it.positionInRoot().y
+                }
             )
             EffectColumn(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
                 delayPerItem = 600
             ) {
                 EffectColumn(
@@ -160,8 +174,27 @@ private fun DetailScreen(
                 )
             }
         }
+
+        val realTrailerY = with(LocalDensity.current) {
+            fakeTrailerY.toDp()
+                .coerceAtLeast(minimumValue = WindowInsets.safeDrawing.getTop(this).toDp())
+        }
+        Trailer(
+            modifier = Modifier.offset(y = realTrailerY),
+            id = uiState.content.id,
+            origin = origin,
+            imageUrl = uiState.content.thumbnailUrl,
+        )
     }
 }
+
+@Composable
+private fun FakeTrailer(
+    modifier: Modifier = Modifier
+) {
+    Box(modifier = modifier.aspectRatio(500 / 281f))
+}
+
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
