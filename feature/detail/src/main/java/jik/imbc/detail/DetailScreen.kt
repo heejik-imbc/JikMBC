@@ -138,9 +138,20 @@ private fun DetailScreen(
                 Toast.makeText(context, "Back", Toast.LENGTH_SHORT).show()
             })
             FakeTrailer(
-                modifier = Modifier.onGloballyPositioned {
-                    fakeTrailerY = it.positionInRoot().y
-                }
+                modifier = Modifier
+                    .onGloballyPositioned {
+                        fakeTrailerY = it.positionInRoot().y
+                    }
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                event.changes.forEach { pointerInputChange ->
+                                    pointerInputChange.consume()
+                                }
+                            }
+                        }
+                    }
             )
             EffectColumn(
                 delayPerItem = 600
