@@ -4,15 +4,15 @@ import android.annotation.SuppressLint
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 
-internal val trailerPlayerListener: (stateChange: (TrailerPlayerState) -> Unit) -> Player.Listener =
-    {
+internal val trailerPlayerListener: (changeState: (TrailerPlayerState) -> Unit) -> Player.Listener =
+    { changeState ->
         object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 super.onPlaybackStateChanged(playbackState)
 
                 @SuppressLint("SwitchIntDef")
                 when (playbackState) {
-                    Player.STATE_IDLE, Player.STATE_ENDED -> it(TrailerPlayerState.INITIAL)
+                    Player.STATE_IDLE, Player.STATE_ENDED -> changeState(TrailerPlayerState.INITIAL)
                 }
             }
 
@@ -21,16 +21,16 @@ internal val trailerPlayerListener: (stateChange: (TrailerPlayerState) -> Unit) 
                 reason: Int
             ) {
                 super.onMediaItemTransition(mediaItem, reason)
-                it(TrailerPlayerState.CAN_PLAY)
+                changeState(TrailerPlayerState.CAN_PLAY)
             }
 
             override fun onIsPlayingChanged(isPlaying: Boolean) {
                 super.onIsPlayingChanged(isPlaying)
 
                 if (isPlaying) {
-                    it(TrailerPlayerState.PLAYING)
+                    changeState(TrailerPlayerState.PLAYING)
                 } else {
-                    it(TrailerPlayerState.PAUSED)
+                    changeState(TrailerPlayerState.PAUSED)
                 }
             }
         }
