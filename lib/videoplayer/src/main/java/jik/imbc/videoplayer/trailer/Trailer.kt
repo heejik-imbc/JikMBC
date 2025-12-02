@@ -18,10 +18,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +39,9 @@ import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.CAN_PLAY
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.INITIAL
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -49,7 +51,9 @@ fun Trailer(
     trailerUrl: String,
     viewModel: TrailerViewModel = viewModel()
 ) {
-
+    var controllerVisible by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    var controllerVisibilityJob: Job? by remember { mutableStateOf(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     DisposableEffect(key1 = Unit) {
@@ -70,9 +74,24 @@ fun Trailer(
             else -> {
                 TrailerPlayerView(
                     player = viewModel.player.player,
-                    playOrPause = viewModel::playOrPause
+                    playOrPause = {
+                        viewModel.playOrPause()
+                        controllerVisible = true
+
+                        controllerVisibilityJob?.cancel()
+                        controllerVisibilityJob = coroutineScope.launch {
+                            delay(1.3.seconds)
+                            controllerVisible = false
+                        }
+                    }
                 )
             }
+        }
+
+        val playbackIcon = if (uiState.playerState == TrailerPlayerState.PAUSED) {
+            VideoPlayerIcons.Pause
+        } else {
+            VideoPlayerIcons.PlayArrow
         }
 
         when (uiState.playerState) {
@@ -86,8 +105,10 @@ fun Trailer(
                 )
             }
 
-            TrailerPlayerState.PAUSED -> TrailerController(playbackIcon = VideoPlayerIcons.Pause)
-            TrailerPlayerState.PLAYING -> TrailerController(playbackIcon = VideoPlayerIcons.PlayArrow)
+            else -> TrailerController(
+                playbackIcon = playbackIcon,
+                visible = controllerVisible
+            )
         }
     }
 }
@@ -124,15 +145,9 @@ private fun TrailerPlayerView(
 @Composable
 private fun BoxScope.TrailerController(
     modifier: Modifier = Modifier,
+    visible: Boolean,
     playbackIcon: ImageVector,
 ) {
-    var visible by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        delay(1.3.seconds)
-        visible = false
-    }
-
 
     AnimatedVisibility(
         modifier = modifier.align(Alignment.Center),
