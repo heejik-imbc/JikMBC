@@ -26,7 +26,7 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         when (uiState.value.playerState) {
             TrailerPlayerState.PLAYING -> player.pause()
             TrailerPlayerState.PAUSED -> player.play()
-            else -> throw IllegalStateException()
+            else -> Unit
         }
     }
 
