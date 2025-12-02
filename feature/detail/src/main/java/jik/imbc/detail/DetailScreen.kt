@@ -1,6 +1,5 @@
 package jik.imbc.detail
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -311,8 +310,6 @@ private fun RatingChip(
     userRating: Float?,
     toggleRatingModify: () -> Unit
 ) {
-    Log.d("heejik", "userRating: $userRating")
-
     val mode = if (userRating != null) {
         RatingModifyMode.Modify
     } else {
@@ -451,7 +448,7 @@ private fun RatingModifySectionContent(
     fun updateRating(x: Float) {
         val clampedX = x.coerceIn(0f, widthPx.toFloat())
 
-        val calculatedRating = (clampedX / widthPx) * 5f
+        val calculatedRating = (clampedX / widthPx) * maxRating
         newRating = (calculatedRating * 2).toInt() / 2f // 가까운 0.5 단위로 반올림
     }
 
