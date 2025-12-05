@@ -1,9 +1,13 @@
 package jik.imbc.videoplayer.player.trailer
 
 import android.content.Context
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
+import kotlin.time.Duration.Companion.seconds
 
 class TrailerPlayer(context: Context) {
 
@@ -11,13 +15,32 @@ class TrailerPlayer(context: Context) {
 
     val state = MutableStateFlow(TrailerPlayerState.INITIAL)
 
+    val duration = MutableStateFlow(C.TIME_UNSET)
+
+    val currentPosition = flow {
+        while (true) {
+            if (state.value != TrailerPlayerState.INITIAL) {
+                emit(player.currentPosition)
+            }
+            delay(1.seconds / 30)
+        }
+    }
+
     init {
         initialize()
     }
 
     fun initialize() {
         player.apply {
-            addListener(trailerPlayerListener { state.value = it })
+            addListener(trailerPlayerListener {
+                state.value = it
+
+                this@TrailerPlayer.duration.let { duration ->
+                    if (duration.value == C.TIME_UNSET) {
+                        duration.value = player.duration
+                    }
+                }
+            })
         }
     }
 
@@ -39,5 +62,9 @@ class TrailerPlayer(context: Context) {
 
     fun pause() {
         player.pause()
+    }
+
+    fun changePosition(position: Long) {
+        player.seekTo(position)
     }
 }

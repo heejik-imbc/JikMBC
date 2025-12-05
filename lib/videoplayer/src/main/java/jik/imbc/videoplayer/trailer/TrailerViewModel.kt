@@ -7,16 +7,20 @@ import jik.imbc.videoplayer.player.trailer.TrailerPlayer
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 
 
 class TrailerViewModel(application: Application) : AndroidViewModel(application = application) {
 
     val player: TrailerPlayer = TrailerPlayer(context = application)
-    val uiState: StateFlow<TrailerUiState> = player.state
-        .map { playerState -> TrailerUiState(playerState = playerState) }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
+    val uiState: StateFlow<TrailerUiState> = combine(
+        player.state,
+        player.currentPosition,
+        player.duration
+    ) { state, position, duration ->
+        TrailerUiState(playerState = state, position = position, duration = duration)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
 
     fun start(url: String) {
         player.start(url = url)
@@ -28,6 +32,10 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
             TrailerPlayerState.PAUSED -> player.play()
             else -> Unit
         }
+    }
+
+    fun changePosition(position: Long) {
+        player.changePosition(position)
     }
 
     fun releasePlayer() {

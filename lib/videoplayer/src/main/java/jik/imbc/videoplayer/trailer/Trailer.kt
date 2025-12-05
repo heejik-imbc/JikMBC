@@ -1,5 +1,6 @@
 package jik.imbc.videoplayer.trailer
 
+import android.util.Log
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.animation.AnimatedVisibility
@@ -9,15 +10,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +40,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import jik.imbc.videoplayer.Thumbnail
+import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.CAN_PLAY
@@ -107,7 +113,10 @@ fun Trailer(
 
             else -> TrailerController(
                 playbackIcon = playbackIcon,
-                visible = controllerVisible
+                visible = controllerVisible,
+                position = uiState.position,
+                duration = uiState.duration,
+                changePosition = viewModel::changePosition
             )
         }
     }
@@ -142,32 +151,53 @@ private fun TrailerPlayerView(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BoxScope.TrailerController(
+private fun TrailerController(
     modifier: Modifier = Modifier,
     visible: Boolean,
     playbackIcon: ImageVector,
+    position: Long,
+    duration: Long,
+    changePosition: (Long) -> Unit
 ) {
 
+    val sliderState = rememberSliderState(
+        valueRange = 0f..duration.coerceAtLeast(0).toFloat(),
+    ).apply { onValueChange = { changePosition(it.toLong()) } }
+
+    LaunchedEffect(key1 = position) {
+        sliderState.value = position.toFloat()
+    }
+
     AnimatedVisibility(
-        modifier = modifier.align(Alignment.Center),
+        modifier = modifier.fillMaxSize(),
         visible = visible,
         enter = fadeIn(),
         exit = fadeOut()
     ) {
-        Box(
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(color = Color.Black.copy(alpha = 0.6f))
-        ) {
-            Icon(
+        Box {
+            Box(
                 modifier = Modifier
-                    .padding(4.dp)
-                    .size(40.dp)
-                    .align(Alignment.Center),
-                imageVector = playbackIcon,
-                contentDescription = null,
-                tint = Color.White
+                    .align(Alignment.Center)
+                    .wrapContentSize()
+                    .clip(CircleShape)
+                    .background(color = Color.Black.copy(alpha = 0.6f))
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(4.dp)
+                        .size(40.dp)
+                        .align(Alignment.Center),
+                    imageVector = playbackIcon,
+                    contentDescription = null,
+                    tint = Color.White
+                )
+            }
+
+            VPSlider(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                state = sliderState
             )
         }
     }
