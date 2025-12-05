@@ -73,8 +73,7 @@ private fun VPThumb(
 
     Spacer(
         modifier = modifier
-            .padding(top = 2.dp)
-            .size(size = 12.dp)
+            .size(size = 14.dp)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
@@ -98,7 +97,7 @@ private fun VPTrack(
         state.valueRange.endInclusive,
         state.value
     )
-    val height = 2.dp
+    val height = 3.dp
 
     Canvas(
         modifier = modifier
