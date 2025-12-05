@@ -1,6 +1,5 @@
 package jik.imbc.videoplayer.trailer
 
-import android.util.Log
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.animation.AnimatedVisibility
@@ -170,16 +169,15 @@ private fun TrailerController(
         sliderState.value = position.toFloat()
     }
 
-    AnimatedVisibility(
-        modifier = modifier.fillMaxSize(),
-        visible = visible,
-        enter = fadeIn(),
-        exit = fadeOut()
-    ) {
-        Box {
+    Box(modifier = modifier.fillMaxSize()) {
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.Center),
+            visible = visible,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
                     .wrapContentSize()
                     .clip(CircleShape)
                     .background(color = Color.Black.copy(alpha = 0.6f))
@@ -194,11 +192,11 @@ private fun TrailerController(
                     tint = Color.White
                 )
             }
-
-            VPSlider(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                state = sliderState
-            )
         }
+
+        VPSlider(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            state = sliderState
+        )
     }
 }
