@@ -198,14 +198,12 @@ private fun TrailerController(
             }
         }
 
-        if (duration >= 0) {
-            TrailerBottomController(
-                modifier = Modifier.align(Alignment.BottomCenter),
-                position = position,
-                duration = duration,
-                changePosition = changePosition
-            )
-        }
+        TrailerBottomController(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            position = position,
+            duration = duration,
+            changePosition = changePosition
+        )
     }
 }
 

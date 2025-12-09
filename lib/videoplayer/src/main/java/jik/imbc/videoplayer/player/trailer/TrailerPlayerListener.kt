@@ -12,26 +12,36 @@ internal val trailerPlayerListener: (changeState: (TrailerPlayerState) -> Unit) 
             ) {
                 super.onEvents(player, events)
 
-                when (player.playbackState) {
-                    Player.STATE_IDLE -> if (player.playerError == null) {
-                        changeState(TrailerPlayerState.INITIAL)
+                val error = player.playerError
+
+                val trailerState = when (player.playbackState) {
+                    Player.STATE_IDLE -> if (error == null) {
+                        TrailerPlayerState.INITIAL
                     } else {
-                        changeState(
-                            TrailerPlayerState.ERROR(
-                                player.playerError?.message,
-                                player.playerError?.errorCode
-                            )
+                        TrailerPlayerState.ERROR(
+                            player.playerError?.message,
+                            player.playerError?.errorCode
                         )
                     }
 
-                    Player.STATE_ENDED -> changeState(TrailerPlayerState.ENDED)
+                    Player.STATE_ENDED -> TrailerPlayerState.ENDED
 
-                    Player.STATE_BUFFERING -> changeState(TrailerPlayerState.BUFFERING)
+                    Player.STATE_BUFFERING -> if (player.contentPosition == 0L) {
+                        TrailerPlayerState.INITIAL
+                    } else {
+                        TrailerPlayerState.BUFFERING
+                    }
 
-                    Player.STATE_READY -> if (player.playWhenReady) changeState(TrailerPlayerState.PLAYING) else changeState(
+                    Player.STATE_READY -> if (player.playWhenReady) {
+                        TrailerPlayerState.PLAYING
+                    } else {
                         TrailerPlayerState.PAUSED
-                    )
+                    }
+
+                    else -> return
                 }
+
+                changeState(trailerState)
             }
         }
     }
