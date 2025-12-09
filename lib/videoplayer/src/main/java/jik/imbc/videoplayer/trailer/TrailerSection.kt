@@ -112,7 +112,13 @@ fun TrailerSection(
                     TrailerPlayerState.PAUSED -> VideoPlayerIcons.Pause
                     TrailerPlayerState.PLAYING -> VideoPlayerIcons.PlayArrow
                     TrailerPlayerState.ENDED -> VideoPlayerIcons.Replay
-                    else -> null
+                    TrailerPlayerState.BUFFERING -> {
+                        controllerVisibilityJob?.cancel()
+                        controllerVisible = false
+                        null
+                    }
+
+                    else -> throw IllegalStateException()
                 }
 
                 TrailerController(
