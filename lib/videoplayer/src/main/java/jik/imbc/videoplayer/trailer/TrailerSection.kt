@@ -60,6 +60,7 @@ fun TrailerSection(
     modifier: Modifier = Modifier,
     thumbnailUrl: String,
     trailerUrl: String,
+    autoPlay: Boolean = true,
     viewModel: TrailerViewModel = viewModel()
 ) {
     var controllerVisible by remember { mutableStateOf(false) }
@@ -68,6 +69,10 @@ fun TrailerSection(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     DisposableEffect(key1 = Unit) {
+        if (autoPlay) {
+            viewModel.start(url = trailerUrl)
+        }
+
         onDispose {
             viewModel.releasePlayer()
         }
