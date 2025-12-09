@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -39,7 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -77,7 +80,7 @@ fun TrailerSection(
     }
 
     Box(modifier = modifier.aspectRatio(500 / 281f)) {
-        when (uiState.playerState) {
+        when (val state = uiState.playerState) {
             TrailerPlayerState.INITIAL -> {
                 TrailerThumbnail(
                     imageUrl = thumbnailUrl,
@@ -85,7 +88,22 @@ fun TrailerSection(
                 )
             }
 
-            is TrailerPlayerState.ERROR -> Unit
+            is TrailerPlayerState.ERROR -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color.Gray),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "오류가 발생했습니다\n" +
+                                "message: ${state.message} code: ${state.code}",
+                        textAlign = TextAlign.Center,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
+            }
 
             else -> {
                 TrailerPlayerView(
