@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.Companion.positionValidStates
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
@@ -19,7 +20,7 @@ class TrailerPlayer(context: Context) {
 
     val currentPosition = flow {
         while (true) {
-            if (state.value != TrailerPlayerState.INITIAL) {
+            if (state.value in positionValidStates) {
                 emit(player.currentPosition)
             }
             delay(1.seconds / 30)
