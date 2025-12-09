@@ -87,6 +87,7 @@ import jik.imbc.ui.transition.ContentCardElementOrigin
 import jik.imbc.ui.transition.ContentCardSharedElementKey
 import jik.imbc.ui.transition.LocalAnimatedContentScope
 import jik.imbc.ui.transition.LocalSharedTransitionScope
+import jik.imbc.videoplayer.vod.VodActivity
 import java.util.Locale
 
 
@@ -173,6 +174,13 @@ private fun DetailScreen(
                         ratingExpanded = ratingExpanded,
                         toggleRatingModify = { ratingExpanded = !ratingExpanded },
                         onRating = onRating
+                    )
+                    PlayButton(
+                        modifier = Modifier.padding(vertical = 12.dp),
+                        onClick = {
+                            val intent = VodActivity.newIntent(context, uiState.content.id)
+                            context.startActivity(intent)
+                        }
                     )
                     Description(
                         modifier = Modifier.padding(vertical = 12.dp),
@@ -502,6 +510,37 @@ private fun RatingModifySectionContent(
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun PlayButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .onClickWithPressEffect(onClick = onClick)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(0xFF007BFF))
+            .padding(vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            modifier = Modifier.size(28.dp),
+            imageVector = JbcIcons.PlayArrow,
+            contentDescription = "재생",
+            tint = Color.White,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = "재생하기",
+            color = Color.White,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
