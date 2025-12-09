@@ -219,7 +219,7 @@ private fun SharedTransitionScope.Trailer(
 ) {
     val animatedContentScope = LocalAnimatedContentScope.current
 
-    jik.imbc.videoplayer.trailer.Trailer(
+    jik.imbc.videoplayer.trailer.TrailerSection(
         modifier = modifier
             .fillMaxWidth()
             .sharedBounds(

@@ -1,4 +1,4 @@
-package jik.imbc.videoplayer
+package jik.imbc.videoplayer.trailer
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,7 +19,7 @@ import coil.compose.AsyncImage
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 
 @Composable
-fun Thumbnail(
+fun TrailerThumbnail(
     modifier: Modifier = Modifier,
     imageUrl: String,
     start: () -> Unit

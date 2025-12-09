@@ -45,7 +45,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import jik.imbc.videoplayer.Thumbnail
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
@@ -57,7 +56,7 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun Trailer(
+fun TrailerSection(
     modifier: Modifier = Modifier,
     thumbnailUrl: String,
     trailerUrl: String,
@@ -77,7 +76,7 @@ fun Trailer(
     Box(modifier = modifier.aspectRatio(500 / 281f)) {
         when (uiState.playerState) {
             INITIAL -> {
-                Thumbnail(
+                TrailerThumbnail(
                     imageUrl = thumbnailUrl,
                     start = { viewModel.start(url = trailerUrl) }
                 )
