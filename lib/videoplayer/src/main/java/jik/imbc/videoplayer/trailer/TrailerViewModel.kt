@@ -30,8 +30,14 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         when (uiState.value.playerState) {
             TrailerPlayerState.PLAYING -> player.pause()
             TrailerPlayerState.PAUSED -> player.play()
+            TrailerPlayerState.ENDED -> replay()
             else -> Unit
         }
+    }
+
+    fun replay() {
+        player.player.seekTo(0)
+        player.play()
     }
 
     fun changePosition(position: Long) {

@@ -13,7 +13,7 @@ class TrailerPlayer(context: Context) {
 
     val player: ExoPlayer = ExoPlayer.Builder(context).build()
 
-    val state = MutableStateFlow(TrailerPlayerState.INITIAL)
+    val state: MutableStateFlow<TrailerPlayerState> = MutableStateFlow(TrailerPlayerState.INITIAL)
 
     val duration = MutableStateFlow(C.TIME_UNSET)
 

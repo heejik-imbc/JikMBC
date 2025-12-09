@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -48,8 +48,6 @@ import androidx.media3.ui.PlayerView
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
-import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.CAN_PLAY
-import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.INITIAL
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -60,7 +58,7 @@ fun TrailerSection(
     modifier: Modifier = Modifier,
     thumbnailUrl: String,
     trailerUrl: String,
-    autoPlay: Boolean = true,
+    autoPlay: Boolean = false,
     viewModel: TrailerViewModel = viewModel()
 ) {
     var controllerVisible by remember { mutableStateOf(false) }
@@ -80,12 +78,14 @@ fun TrailerSection(
 
     Box(modifier = modifier.aspectRatio(500 / 281f)) {
         when (uiState.playerState) {
-            INITIAL -> {
+            TrailerPlayerState.INITIAL -> {
                 TrailerThumbnail(
                     imageUrl = thumbnailUrl,
                     start = { viewModel.start(url = trailerUrl) }
                 )
             }
+
+            is TrailerPlayerState.ERROR -> Unit
 
             else -> {
                 TrailerPlayerView(
@@ -104,30 +104,25 @@ fun TrailerSection(
             }
         }
 
-        val playbackIcon = if (uiState.playerState == TrailerPlayerState.PAUSED) {
-            VideoPlayerIcons.Pause
-        } else {
-            VideoPlayerIcons.PlayArrow
-        }
+        when (val state = uiState.playerState) {
+            TrailerPlayerState.INITIAL, is TrailerPlayerState.ERROR -> Unit
 
-        when (uiState.playerState) {
-            INITIAL -> Unit
-            CAN_PLAY -> {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .size(40.dp),
-                    color = Color.White,
+            else -> {
+                val playbackIcon = when (state) {
+                    TrailerPlayerState.PAUSED -> VideoPlayerIcons.Pause
+                    TrailerPlayerState.PLAYING -> VideoPlayerIcons.PlayArrow
+                    TrailerPlayerState.ENDED -> VideoPlayerIcons.Replay
+                    else -> null
+                }
+
+                TrailerController(
+                    playbackIcon = playbackIcon,
+                    visible = controllerVisible,
+                    position = uiState.position,
+                    duration = uiState.duration,
+                    changePosition = viewModel::changePosition
                 )
             }
-
-            else -> TrailerController(
-                playbackIcon = playbackIcon,
-                visible = controllerVisible,
-                position = uiState.position,
-                duration = uiState.duration,
-                changePosition = viewModel::changePosition
-            )
         }
     }
 }
@@ -160,18 +155,62 @@ private fun TrailerPlayerView(
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TrailerController(
     modifier: Modifier = Modifier,
     visible: Boolean,
-    playbackIcon: ImageVector,
+    playbackIcon: ImageVector?,
     position: Long,
     duration: Long,
     changePosition: (Long) -> Unit
 ) {
 
+    Box(modifier = modifier.fillMaxSize()) {
+        if (playbackIcon != null) {
+            AnimatedVisibility(
+                modifier = Modifier.align(Alignment.Center),
+                visible = visible,
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .clip(CircleShape)
+                        .background(color = Color.Black.copy(alpha = 0.6f))
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(40.dp)
+                            .align(Alignment.Center),
+                        imageVector = playbackIcon,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+
+        if (duration >= 0) {
+            TrailerBottomController(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                position = position,
+                duration = duration,
+                changePosition = changePosition
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BoxScope.TrailerBottomController(
+    modifier: Modifier = Modifier,
+    position: Long,
+    duration: Long,
+    changePosition: (Long) -> Unit
+) {
     val sliderState = rememberSliderState(
         valueRange = 0f..duration.coerceAtLeast(0).toFloat(),
     ).apply { onValueChange = { changePosition(it.toLong()) } }
@@ -180,48 +219,21 @@ private fun TrailerController(
         sliderState.value = position.toFloat()
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
-        AnimatedVisibility(
-            modifier = Modifier.align(Alignment.Center),
-            visible = visible,
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(CircleShape)
-                    .background(color = Color.Black.copy(alpha = 0.6f))
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(40.dp)
-                        .align(Alignment.Center),
-                    imageVector = playbackIcon,
-                    contentDescription = null,
-                    tint = Color.White
+    CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
+        Spacer(
+            modifier = modifier
+                .fillMaxWidth()
+                .offset(y = 3.dp)
+                .height(3.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primary
                 )
-            }
-        }
-
-        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 0.dp) {
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 3.dp)
-                    .height(3.dp)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary
-                    )
-            )
-            VPSlider(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .offset(y = 9.5.dp),
-                state = sliderState
-            )
-        }
+        )
+        VPSlider(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = 9.5.dp),
+            state = sliderState
+        )
     }
 }

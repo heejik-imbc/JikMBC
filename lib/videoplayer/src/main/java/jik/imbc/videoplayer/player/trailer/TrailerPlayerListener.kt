@@ -1,36 +1,36 @@
 package jik.imbc.videoplayer.player.trailer
 
-import android.annotation.SuppressLint
-import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 
 internal val trailerPlayerListener: (changeState: (TrailerPlayerState) -> Unit) -> Player.Listener =
     { changeState ->
         object : Player.Listener {
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                super.onPlaybackStateChanged(playbackState)
 
-                @SuppressLint("SwitchIntDef")
-                when (playbackState) {
-                    Player.STATE_IDLE, Player.STATE_ENDED -> changeState(TrailerPlayerState.INITIAL)
-                }
-            }
-
-            override fun onMediaItemTransition(
-                mediaItem: MediaItem?,
-                reason: Int
+            override fun onEvents(
+                player: Player,
+                events: Player.Events
             ) {
-                super.onMediaItemTransition(mediaItem, reason)
-                changeState(TrailerPlayerState.CAN_PLAY)
-            }
+                super.onEvents(player, events)
 
-            override fun onIsPlayingChanged(isPlaying: Boolean) {
-                super.onIsPlayingChanged(isPlaying)
+                when (player.playbackState) {
+                    Player.STATE_IDLE -> if (player.playerError == null) {
+                        changeState(TrailerPlayerState.INITIAL)
+                    } else {
+                        changeState(
+                            TrailerPlayerState.ERROR(
+                                player.playerError?.message,
+                                player.playerError?.errorCode
+                            )
+                        )
+                    }
 
-                if (isPlaying) {
-                    changeState(TrailerPlayerState.PLAYING)
-                } else {
-                    changeState(TrailerPlayerState.PAUSED)
+                    Player.STATE_ENDED -> changeState(TrailerPlayerState.ENDED)
+
+                    Player.STATE_BUFFERING -> changeState(TrailerPlayerState.BUFFERING)
+
+                    Player.STATE_READY -> if (player.playWhenReady) changeState(TrailerPlayerState.PLAYING) else changeState(
+                        TrailerPlayerState.PAUSED
+                    )
                 }
             }
         }
