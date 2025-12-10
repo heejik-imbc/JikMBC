@@ -19,6 +19,8 @@ class TrailerPlayer(context: Context) {
     val duration = MutableStateFlow(C.TIME_UNSET)
 
     val currentPosition = flow {
+        emit(0L)
+
         while (true) {
             if (state.value in positionValidStates) {
                 emit(player.currentPosition)
