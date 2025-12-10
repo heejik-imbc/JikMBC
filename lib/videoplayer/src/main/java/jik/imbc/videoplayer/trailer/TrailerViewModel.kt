@@ -22,6 +22,8 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         TrailerUiState(playerState = state, position = position, duration = duration)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
 
+    private var shouldResumePlayback = false
+
     fun start(url: String) {
         player.start(url = url)
     }
@@ -44,7 +46,21 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         player.changePosition(position)
     }
 
-    fun releasePlayer() {
+    fun pauseIfPlaying() {
+        shouldResumePlayback = uiState.value.playerState == TrailerPlayerState.PLAYING
+        if (shouldResumePlayback) {
+            player.pause()
+        }
+    }
+
+    fun resumeIfWasPlaying() {
+        if (shouldResumePlayback) {
+            player.play()
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
         player.release()
     }
 }

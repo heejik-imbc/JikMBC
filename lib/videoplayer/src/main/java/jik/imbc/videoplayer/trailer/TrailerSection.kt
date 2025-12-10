@@ -28,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.exoplayer.ExoPlayer
@@ -61,7 +61,7 @@ fun TrailerSection(
     modifier: Modifier = Modifier,
     thumbnailUrl: String,
     trailerUrl: String,
-    autoPlay: Boolean = false,
+    autoPlay: Boolean = true,
     viewModel: TrailerViewModel = viewModel()
 ) {
     var controllerVisible by remember { mutableStateOf(false) }
@@ -69,13 +69,17 @@ fun TrailerSection(
     var controllerVisibilityJob: Job? by remember { mutableStateOf(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    DisposableEffect(key1 = Unit) {
+    LaunchedEffect(key1 = Unit) {
         if (autoPlay) {
             viewModel.start(url = trailerUrl)
         }
+    }
 
-        onDispose {
-            viewModel.releasePlayer()
+    LifecycleResumeEffect(key1 = Unit) {
+        viewModel.resumeIfWasPlaying()
+
+        onPauseOrDispose {
+            viewModel.pauseIfPlaying()
         }
     }
 
