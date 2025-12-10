@@ -39,6 +39,8 @@ android {
 dependencies {
     // modules
     implementation(projects.core.designsystem)
+    implementation(projects.core.data)
+    implementation(projects.core.model)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -62,4 +64,5 @@ dependencies {
     // exoplayer
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)
+    implementation(libs.media3.ui.compose)
 }

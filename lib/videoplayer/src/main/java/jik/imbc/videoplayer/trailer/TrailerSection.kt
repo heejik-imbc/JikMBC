@@ -1,7 +1,5 @@
 package jik.imbc.videoplayer.trailer
 
-import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,12 +40,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
+import androidx.media3.ui.compose.PlayerSurface
+import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
@@ -155,32 +154,22 @@ fun TrailerSection(
     }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 private fun TrailerPlayerView(
     modifier: Modifier = Modifier,
     player: ExoPlayer,
     playOrPause: () -> Unit
 ) {
-    Box(
+    PlayerSurface(
+        player = player,
+        surfaceType = SURFACE_TYPE_SURFACE_VIEW,
         modifier = modifier.clickable(
             indication = null,
             interactionSource = remember { MutableInteractionSource() },
             onClick = playOrPause
         )
-    ) {
-        AndroidView(
-            factory = { context ->
-                PlayerView(context).apply {
-                    this.player = player
-                    this.useController = false
-                    this.layoutParams = ViewGroup.LayoutParams(
-                        MATCH_PARENT,
-                        MATCH_PARENT
-                    )
-                }
-            },
-        )
-    }
+    )
 }
 
 @Composable
