@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
@@ -93,7 +94,7 @@ private fun VodScreen(
 
     var controllerVisible by remember { mutableStateOf(true) }
 
-    LaunchedEffect(controllerVisible, playerState) {
+    LaunchedEffect(key1 = controllerVisible, key2 = playerState) {
         if (controllerVisible && playerState == VodPlayerState.PLAYING) {
             delay(3000)
             controllerVisible = false
@@ -173,7 +174,17 @@ private fun VodController(
         exit = fadeOut(animationSpec = TweenSpec(durationMillis = 200)),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.7f),
+                            Color.Black.copy(alpha = 0.4f),
+                            Color.Black.copy(alpha = 0.7f)
+                        )
+                    )
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
