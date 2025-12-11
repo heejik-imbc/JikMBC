@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import jik.imbc.data.mock.MockVideo.LONG_VIDEO_URL
 import jik.imbc.data.repository.ContentRepository
 import jik.imbc.data.repository.ContentRepositoryImpl
 import jik.imbc.model.Content
@@ -35,8 +36,12 @@ class VodViewModel(
         VodUiState(content = content, playerState = state, position = position, duration = duration)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VodUiState())
 
-    fun start(url: String) {
-        player.start(url = url)
+    init {
+        start()
+    }
+
+    fun start() {
+        player.start(url = LONG_VIDEO_URL)
     }
 
     fun play() {
