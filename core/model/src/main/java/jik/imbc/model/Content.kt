@@ -21,6 +21,18 @@ data class Content(
 
     val getThumbnailUrl: String
         get() = "$baseUrl/$thumbnailUrl"
+
+
+    companion object {
+        val EMPTY = Content(
+            id = 0,
+            title = "",
+            description = "",
+            category = ContentCategory.ENTERTAINMENT,
+            rating = "",
+            releaseDate = "",
+        )
+    }
 }
 
 enum class ContentCategory {
