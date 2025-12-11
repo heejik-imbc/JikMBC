@@ -7,11 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import jik.imbc.designsystem.theme.JikMBCTheme
+import jik.imbc.videoplayer.screen.applyImmersiveMode
 
 class VodActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        applyImmersiveMode()
 
         setContent {
             JikMBCTheme {
