@@ -23,6 +23,7 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
 
     private var shouldResumePlayback = false
+    var autoPlayed = false
 
     fun start(url: String) {
         player.start(url = url)

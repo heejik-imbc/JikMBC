@@ -69,8 +69,9 @@ fun TrailerSection(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = Unit) {
-        if (autoPlay) {
+        if (autoPlay && viewModel.autoPlayed.not()) {
             viewModel.start(url = trailerUrl)
+            viewModel.autoPlayed = true
         }
     }
 
