@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,7 @@ import jik.imbc.videoplayer.player.vod.ActiveState
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.player.vod.component.ControllerIcon
 import jik.imbc.videoplayer.player.vod.component.controllerCenterIconSize
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -77,6 +79,13 @@ private fun VodScreen(
 ) {
 
     var controllerVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(controllerVisible, playerState) {
+        if (controllerVisible && playerState == VodPlayerState.PLAYING) {
+            delay(3000)
+            controllerVisible = false
+        }
+    }
 
     Box(modifier = modifier.noRippleClickable { controllerVisible = !controllerVisible }) {
         VodPlayer(player = player)
