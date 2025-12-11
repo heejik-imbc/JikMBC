@@ -9,6 +9,7 @@ import jik.imbc.data.repository.ContentRepository
 import jik.imbc.data.repository.ContentRepositoryImpl
 import jik.imbc.model.Content
 import jik.imbc.videoplayer.player.vod.VodPlayer
+import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.vod.VodActivity.Companion.EXTRA_CONTENT_ID
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -40,16 +41,40 @@ class VodViewModel(
         start()
     }
 
-    fun start() {
+    fun playPauseReplay() {
+        when (uiState.value.playerState) {
+            is VodPlayerState.PLAYING -> pause()
+            is VodPlayerState.PAUSED -> play()
+            is VodPlayerState.ENDED -> replay()
+            else -> Unit
+        }
+    }
+
+    fun skipBack() {
+        val newPosition = (uiState.value.position - 10_000).coerceAtLeast(0)
+        player.changePosition(newPosition)
+    }
+
+    fun skipForward() {
+        val newPosition = (uiState.value.position + 10_000).coerceAtMost(uiState.value.duration)
+        player.changePosition(newPosition)
+    }
+
+    private fun start() {
         player.start(url = LONG_VIDEO_URL)
     }
 
-    fun play() {
+    private fun play() {
         player.play()
     }
 
-    fun pause() {
+    private fun pause() {
         player.pause()
+    }
+
+    private fun replay() {
+        player.player.seekTo(0)
+        player.play()
     }
 
     override fun onCleared() {
