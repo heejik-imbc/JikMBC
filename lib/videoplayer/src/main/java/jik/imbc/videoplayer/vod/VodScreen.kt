@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -46,7 +47,9 @@ internal fun VodRoute(
     val uiState: VodUiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     VodScreen(
-        modifier = modifier.background(color = Color.Black),
+        modifier = modifier
+            .fillMaxSize()
+            .background(color = Color.Black),
         player = viewModel.player.player,
         playerState = uiState.playerState,
         position = uiState.position,
@@ -70,14 +73,15 @@ private fun VodScreen(
 ) {
 
     Box(modifier = modifier) {
+        VodPlayer(
+            player = player,
+            toggleControllerVisible = {}
+        )
+
         when (playerState) {
             is VodPlayerState.INITIAL -> {}
             is VodPlayerState.ERROR -> {}
             is ActiveState -> {
-                VodPlayer(
-                    player = player,
-                    toggleControllerVisible = {}
-                )
                 VodController(
                     visible = true,
                     playerState = playerState,
@@ -95,7 +99,7 @@ private fun VodScreen(
 
 @OptIn(UnstableApi::class)
 @Composable
-private fun VodPlayer(
+private fun BoxScope.VodPlayer(
     modifier: Modifier = Modifier,
     player: ExoPlayer,
     toggleControllerVisible: () -> Unit
@@ -116,6 +120,15 @@ private fun VodPlayer(
             onClick = {}
         )
     )
+
+
+    if (presentationState.coverSurface) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color.Black)
+        )
+    }
 }
 
 @Composable
