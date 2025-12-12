@@ -25,7 +25,15 @@ data class SeekState(
     val direction: SeekDirection = SeekDirection.NONE,
     val count: Int = 0,
     val visible: Boolean = false
-)
+) {
+    fun updateBySeek(seekDirection: SeekDirection): SeekState {
+        return SeekState(
+            direction = seekDirection,
+            count = if (this.direction == seekDirection) this.count + 1 else 1,
+            visible = true
+        )
+    }
+}
 
 @Composable
 internal fun rememberSeekState(): MutableState<SeekState> {
@@ -72,15 +80,7 @@ internal fun Modifier.handleSeekTapGesture(
                         onRightConsecutiveTap()
                     }
 
-                    seekState.value = seekState.value.copy(
-                        direction = currentSide,
-                        count = if (seekState.value.direction == currentSide) {
-                            seekState.value.count + 1
-                        } else {
-                            1
-                        },
-                        visible = true
-                    )
+                    seekState.value = seekState.value.updateBySeek(currentSide)
                 } else {
                     onSingleTap()
                 }

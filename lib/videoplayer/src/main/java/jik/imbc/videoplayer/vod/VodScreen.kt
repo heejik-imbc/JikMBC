@@ -148,9 +148,15 @@ private fun VodScreen(
                     title = title,
                     position = position,
                     duration = duration,
-                    onBackward = onBackward,
+                    onBackward = {
+                        seekState.value = seekState.value.updateBySeek(SeekDirection.BACKWARD)
+                        onBackward()
+                    },
                     onPlayPauseReplay = onPlayPauseReplay,
-                    onForward = onForward,
+                    onForward = {
+                        seekState.value = seekState.value.updateBySeek(SeekDirection.FORWARD)
+                        onForward()
+                    },
                     navigateUp = navigateUp
                 )
 
