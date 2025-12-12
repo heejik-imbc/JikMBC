@@ -7,5 +7,6 @@ data class VodUiState(
     val content: Content = Content.EMPTY,
     val playerState: VodPlayerState = VodPlayerState.INITIAL,
     val position: Long = 0,
-    val duration: Long = 0
+    val duration: Long = 0,
+    val seekAmount: Long = 0L
 )
