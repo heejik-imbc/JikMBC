@@ -29,9 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,11 +48,17 @@ import androidx.media3.ui.compose.state.rememberPresentationState
 import jik.imbc.designsystem.icon.JbcIcons.ArrowBack
 import jik.imbc.ui.layout.noRippleClickable
 import jik.imbc.videoplayer.R
+import jik.imbc.videoplayer.data.SettingRepository.SEEK_AMOUNT
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.vod.ActiveState
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.player.vod.component.ControllerIcon
 import jik.imbc.videoplayer.player.vod.component.controllerCenterIconSize
+import jik.imbc.videoplayer.ui.FADE_OUT_DURATION
+import jik.imbc.videoplayer.ui.SeekDirection
+import jik.imbc.videoplayer.ui.SeekState
+import jik.imbc.videoplayer.ui.handleSeekTapGesture
+import jik.imbc.videoplayer.ui.rememberSeekState
 import kotlinx.coroutines.delay
 
 
@@ -101,7 +109,17 @@ private fun VodScreen(
         }
     }
 
-    Box(modifier = modifier.noRippleClickable { controllerVisible = !controllerVisible }) {
+    val seekState = rememberSeekState()
+
+    Box(
+        modifier = modifier
+            .handleSeekTapGesture(
+                seekState = seekState,
+                onSingleTap = { controllerVisible = !controllerVisible },
+                onLeftConsecutiveTap = onBackward,
+                onRightConsecutiveTap = onForward,
+            )
+    ) {
         VodPlayer(player = player)
 
         when (playerState) {
@@ -119,6 +137,15 @@ private fun VodScreen(
                     onForward = onForward,
                     navigateUp = navigateUp
                 )
+
+                AnimatedVisibility(
+                    visible = seekState.value.visible,
+                    enter = fadeIn(TweenSpec(durationMillis = FADE_OUT_DURATION)),
+                    exit = fadeOut(TweenSpec(durationMillis = FADE_OUT_DURATION)),
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    SeekIndicator(seekState = seekState.value)
+                }
             }
         }
     }
@@ -311,6 +338,49 @@ private fun VodBottomController(
     duration: Long
 ) {
     Box(modifier = modifier) {}
+}
+
+@Composable
+private fun SeekIndicator(
+    modifier: Modifier = Modifier,
+    seekState: SeekState
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Spacer(modifier = Modifier.weight(0.2f))
+        SeekIndicatorItem(
+            modifier = Modifier.alpha(if (seekState.direction == SeekDirection.BACKWARD) 1f else 0f),
+            direction = SeekDirection.BACKWARD,
+            count = seekState.count
+        )
+        Spacer(modifier = Modifier.weight(0.6f))
+        SeekIndicatorItem(
+            modifier = Modifier.alpha(if (seekState.direction == SeekDirection.FORWARD) 1f else 0f),
+            direction = SeekDirection.FORWARD,
+            count = seekState.count
+        )
+        Spacer(modifier = Modifier.weight(0.2f))
+    }
+}
+
+@Composable
+private fun SeekIndicatorItem(
+    modifier: Modifier = Modifier,
+    direction: SeekDirection,
+    count: Int,
+) {
+
+    val suffix = if (direction == SeekDirection.FORWARD) "+" else "-"
+
+    Text(
+        modifier = modifier,
+        text = "$suffix${count * (SEEK_AMOUNT / 1000)}",
+        color = Color.White,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+    )
 }
 
 @Preview

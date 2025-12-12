@@ -8,6 +8,7 @@ import jik.imbc.data.mock.MockVideo.LONG_VIDEO_URL
 import jik.imbc.data.repository.ContentRepository
 import jik.imbc.data.repository.ContentRepositoryImpl
 import jik.imbc.model.Content
+import jik.imbc.videoplayer.data.SettingRepository.SEEK_AMOUNT
 import jik.imbc.videoplayer.player.vod.VodPlayer
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.vod.VodActivity.Companion.EXTRA_CONTENT_ID
@@ -51,12 +52,13 @@ class VodViewModel(
     }
 
     fun skipBack() {
-        val newPosition = (uiState.value.position - 10_000).coerceAtLeast(0)
+        val newPosition = (uiState.value.position - SEEK_AMOUNT).coerceAtLeast(0)
         player.changePosition(newPosition)
     }
 
     fun skipForward() {
-        val newPosition = (uiState.value.position + 10_000).coerceAtMost(uiState.value.duration)
+        val newPosition =
+            (uiState.value.position + SEEK_AMOUNT).coerceAtMost(uiState.value.duration)
         player.changePosition(newPosition)
     }
 
