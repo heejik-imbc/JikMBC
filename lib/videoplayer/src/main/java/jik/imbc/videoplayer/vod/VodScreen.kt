@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -111,13 +112,28 @@ private fun VodScreen(
 
     val seekState = rememberSeekState()
 
+    val playerStateUpdated by rememberUpdatedState(newValue = playerState)
+    var prePlayerState by remember { mutableStateOf(playerState) }
+    var preControllerVisible by remember { mutableStateOf(controllerVisible) }
+
     Box(
         modifier = modifier
             .handleSeekTapGesture(
                 seekState = seekState,
-                onSingleTap = { controllerVisible = !controllerVisible },
-                onLeftConsecutiveTap = onBackward,
-                onRightConsecutiveTap = onForward,
+                onSingleTap = {
+                    preControllerVisible = controllerVisible
+                    prePlayerState = playerStateUpdated
+
+                    controllerVisible = !controllerVisible
+                },
+                onLeftConsecutiveTap = {
+                    onBackward()
+                    controllerVisible = preControllerVisible || prePlayerState !is VodPlayerState.PLAYING
+                },
+                onRightConsecutiveTap = {
+                    onForward()
+                    controllerVisible = preControllerVisible || prePlayerState !is VodPlayerState.PLAYING
+                },
             )
     ) {
         VodPlayer(player = player)
