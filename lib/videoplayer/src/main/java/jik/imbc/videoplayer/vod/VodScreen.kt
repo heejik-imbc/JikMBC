@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSliderState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,6 +51,7 @@ import androidx.media3.ui.compose.state.rememberPresentationState
 import jik.imbc.designsystem.icon.JbcIcons.ArrowBack
 import jik.imbc.ui.layout.noRippleClickable
 import jik.imbc.videoplayer.R
+import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.data.SettingRepository.SEEK_AMOUNT
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.vod.ActiveState
@@ -83,6 +86,7 @@ internal fun VodRoute(
         onBackward = viewModel::skipBack,
         onPlayPauseReplay = viewModel::playPauseReplay,
         onForward = viewModel::skipForward,
+        changePosition = viewModel::changePosition,
         navigateUp = { activity?.finish() }
     )
 }
@@ -98,6 +102,7 @@ private fun VodScreen(
     onBackward: () -> Unit,
     onPlayPauseReplay: () -> Unit,
     onForward: () -> Unit,
+    changePosition: (Long) -> Unit,
     navigateUp: () -> Unit
 ) {
 
@@ -157,7 +162,8 @@ private fun VodScreen(
                         seekState.value = seekState.value.updateBySeek(SeekDirection.FORWARD)
                         onForward()
                     },
-                    navigateUp = navigateUp
+                    navigateUp = navigateUp,
+                    changePosition = changePosition
                 )
 
                 AnimatedVisibility(
@@ -213,6 +219,7 @@ private fun VodController(
     onBackward: () -> Unit,
     onPlayPauseReplay: () -> Unit,
     onForward: () -> Unit,
+    changePosition: (Long) -> Unit,
     navigateUp: () -> Unit
 ) {
 
@@ -252,7 +259,8 @@ private fun VodController(
             VodBottomController(
                 modifier = Modifier.weight(1f),
                 position = position,
-                duration = duration
+                duration = duration,
+                changePosition = changePosition
             )
         }
     }
@@ -353,13 +361,28 @@ private fun CenterPlaybackControl(
 }
 
 
+@kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun VodBottomController(
     modifier: Modifier = Modifier,
     position: Long,
-    duration: Long
+    duration: Long,
+    changePosition: (Long) -> Unit
 ) {
-    Box(modifier = modifier) {}
+    val sliderState = rememberSliderState(
+        valueRange = 0f..duration.coerceAtLeast(0).toFloat(),
+    ).apply { onValueChange = { changePosition(it.toLong()) } }
+
+    LaunchedEffect(key1 = position) {
+        sliderState.value = position.toFloat()
+    }
+
+    VPSlider(
+        modifier = modifier.padding(horizontal = 24.dp),
+        state = sliderState,
+        thumbSize = 18.dp,
+        trackHeight = 5.dp
+    )
 }
 
 @Composable

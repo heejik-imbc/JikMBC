@@ -79,6 +79,10 @@ class VodViewModel(
         player.play()
     }
 
+    fun changePosition(position: Long) {
+        player.changePosition(position)
+    }
+
     override fun onCleared() {
         super.onCleared()
 

@@ -8,7 +8,6 @@ import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
@@ -36,7 +36,9 @@ internal fun VPSlider(
     state: SliderState = rememberSliderState(),
     thumbColor: Color = MaterialTheme.colorScheme.primary,
     activeTrackColor: Color = MaterialTheme.colorScheme.primary,
-    inactiveTrackColor: Color = MaterialTheme.colorScheme.primary
+    inactiveTrackColor: Color = Color.Gray,
+    thumbSize: Dp = 14.dp,
+    trackHeight: Dp = 3.dp
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -47,12 +49,14 @@ internal fun VPSlider(
         thumb = {
             VPThumb(
                 interactionSource = interactionSource,
+                thumbSize = thumbSize,
                 color = thumbColor
             )
         },
         track = {
             VPTrack(
                 state = it,
+                trackHeight = trackHeight,
                 activeColor = activeTrackColor,
                 inactiveColor = inactiveTrackColor
             )
@@ -64,6 +68,7 @@ internal fun VPSlider(
 private fun VPThumb(
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource,
+    thumbSize: Dp,
     color: Color
 ) {
     val isDragged by interactionSource.collectIsDraggedAsState()
@@ -73,7 +78,7 @@ private fun VPThumb(
 
     Spacer(
         modifier = modifier
-            .size(size = 14.dp)
+            .size(size = thumbSize)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
@@ -89,6 +94,7 @@ private fun VPThumb(
 private fun VPTrack(
     modifier: Modifier = Modifier,
     state: SliderState,
+    trackHeight: Dp,
     activeColor: Color,
     inactiveColor: Color
 ) {
@@ -97,7 +103,7 @@ private fun VPTrack(
         state.valueRange.endInclusive,
         state.value
     )
-    val height = 3.dp
+    val height = trackHeight
 
     Canvas(
         modifier = modifier
