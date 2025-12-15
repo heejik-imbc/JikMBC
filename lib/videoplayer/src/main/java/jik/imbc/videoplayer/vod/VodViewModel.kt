@@ -8,7 +8,7 @@ import jik.imbc.data.mock.MockVideo.LONG_VIDEO_URL
 import jik.imbc.data.repository.ContentRepository
 import jik.imbc.data.repository.ContentRepositoryImpl
 import jik.imbc.model.Content
-import jik.imbc.videoplayer.data.SettingRepository.SEEK_AMOUNT
+import jik.imbc.videoplayer.data.SettingRepository
 import jik.imbc.videoplayer.player.vod.VodPlayer
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.vod.VodActivity.Companion.EXTRA_CONTENT_ID
@@ -23,6 +23,7 @@ class VodViewModel(
 ) : AndroidViewModel(application = application) {
 
     val contentRepository: ContentRepository = ContentRepositoryImpl()
+    val settingRepository: SettingRepository = SettingRepository()
 
     val player: VodPlayer = VodPlayer(context = application)
 
@@ -33,9 +34,10 @@ class VodViewModel(
     val uiState: StateFlow<VodUiState> = combine(
         player.state,
         player.currentPosition,
-        player.duration
-    ) { state, position, duration ->
-        VodUiState(content = content, playerState = state, position = position, duration = duration)
+        player.duration,
+        settingRepository.seekAmount
+    ) { state, position, duration, seekAmount ->
+        VodUiState(content = content, playerState = state, position = position, duration = duration, seekAmount = seekAmount)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VodUiState())
 
     init {
@@ -52,13 +54,13 @@ class VodViewModel(
     }
 
     fun skipBack() {
-        val newPosition = (uiState.value.position - SEEK_AMOUNT).coerceAtLeast(0)
+        val newPosition = (uiState.value.position - uiState.value.seekAmount).coerceAtLeast(0)
         player.changePosition(newPosition)
     }
 
     fun skipForward() {
         val newPosition =
-            (uiState.value.position + SEEK_AMOUNT).coerceAtMost(uiState.value.duration)
+            (uiState.value.position + uiState.value.seekAmount).coerceAtMost(uiState.value.duration)
         player.changePosition(newPosition)
     }
 
@@ -75,12 +77,16 @@ class VodViewModel(
     }
 
     private fun replay() {
-        player.player.seekTo(0)
+        player.changePosition(position = 0L)
         player.play()
     }
 
     fun changePosition(position: Long) {
         player.changePosition(position)
+    }
+
+    fun changeSeekAmount() {
+        settingRepository.changeSeekAmount()
     }
 
     override fun onCleared() {

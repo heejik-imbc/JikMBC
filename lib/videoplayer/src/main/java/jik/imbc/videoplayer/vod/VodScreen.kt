@@ -3,10 +3,12 @@ package jik.imbc.videoplayer.vod
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.TweenSpec
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -33,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -52,7 +56,6 @@ import jik.imbc.designsystem.icon.JbcIcons.ArrowBack
 import jik.imbc.ui.layout.noRippleClickable
 import jik.imbc.videoplayer.R
 import jik.imbc.videoplayer.component.VPSlider
-import jik.imbc.videoplayer.data.SettingRepository.SEEK_AMOUNT
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.player.vod.ActiveState
 import jik.imbc.videoplayer.player.vod.VodPlayerState
@@ -83,10 +86,12 @@ internal fun VodRoute(
         title = uiState.content.title,
         position = uiState.position,
         duration = uiState.duration,
+        seekAmount = uiState.seekAmount,
         onBackward = viewModel::skipBack,
         onPlayPauseReplay = viewModel::playPauseReplay,
         onForward = viewModel::skipForward,
         changePosition = viewModel::changePosition,
+        changeSeekAmount = viewModel::changeSeekAmount,
         navigateUp = { activity?.finish() }
     )
 }
@@ -99,10 +104,12 @@ private fun VodScreen(
     title: String,
     position: Long,
     duration: Long,
+    seekAmount: Long,
     onBackward: () -> Unit,
     onPlayPauseReplay: () -> Unit,
     onForward: () -> Unit,
     changePosition: (Long) -> Unit,
+    changeSeekAmount: () -> Unit,
     navigateUp: () -> Unit
 ) {
 
@@ -115,7 +122,7 @@ private fun VodScreen(
         }
     }
 
-    val seekState = rememberSeekState()
+    val seekState = rememberSeekState(seekAmount = seekAmount)
 
     val playerStateUpdated by rememberUpdatedState(newValue = playerState)
     var prePlayerState by remember { mutableStateOf(playerState) }
@@ -153,6 +160,7 @@ private fun VodScreen(
                     title = title,
                     position = position,
                     duration = duration,
+                    seekAmount = seekAmount,
                     onBackward = {
                         seekState.value = seekState.value.updateBySeek(SeekDirection.BACKWARD)
                         onBackward()
@@ -163,7 +171,8 @@ private fun VodScreen(
                         onForward()
                     },
                     navigateUp = navigateUp,
-                    changePosition = changePosition
+                    changePosition = changePosition,
+                    changeSeekAmount = changeSeekAmount
                 )
 
                 AnimatedVisibility(
@@ -216,10 +225,12 @@ private fun VodController(
     title: String,
     position: Long,
     duration: Long,
+    seekAmount: Long,
     onBackward: () -> Unit,
     onPlayPauseReplay: () -> Unit,
     onForward: () -> Unit,
     changePosition: (Long) -> Unit,
+    changeSeekAmount: () -> Unit,
     navigateUp: () -> Unit
 ) {
 
@@ -260,7 +271,9 @@ private fun VodController(
                 modifier = Modifier.weight(1f),
                 position = position,
                 duration = duration,
-                changePosition = changePosition
+                seekAmount = seekAmount,
+                changePosition = changePosition,
+                changeSeekAmount = changeSeekAmount
             )
         }
     }
@@ -367,7 +380,9 @@ private fun VodBottomController(
     modifier: Modifier = Modifier,
     position: Long,
     duration: Long,
-    changePosition: (Long) -> Unit
+    seekAmount: Long,
+    changePosition: (Long) -> Unit,
+    changeSeekAmount: () -> Unit
 ) {
     val sliderState = rememberSliderState(
         valueRange = 0f..duration.coerceAtLeast(0).toFloat(),
@@ -377,12 +392,44 @@ private fun VodBottomController(
         sliderState.value = position.toFloat()
     }
 
-    VPSlider(
-        modifier = modifier.padding(horizontal = 24.dp),
-        state = sliderState,
-        thumbSize = 18.dp,
-        trackHeight = 5.dp
-    )
+    Column(modifier = modifier.padding(horizontal = 24.dp), verticalArrangement = Arrangement.Center) {
+        VPSlider(
+            state = sliderState,
+            thumbSize = 18.dp,
+            trackHeight = 5.dp
+        )
+        VodBottomExtraController(
+            seekAmount = seekAmount,
+            changeSeekAmount = changeSeekAmount
+        )
+    }
+}
+
+@Composable
+private fun VodBottomExtraController(
+    modifier: Modifier = Modifier,
+    seekAmount: Long,
+    changeSeekAmount: () -> Unit
+) {
+    Row(modifier = modifier) {
+        Spacer(modifier = Modifier.weight(1f))
+
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(size = 20.dp))
+                .background(color = Color.Black.copy(alpha = 0.6f))
+                .clickable(onClick = changeSeekAmount)
+                .animateContentSize(),
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 12.dp)
+                    .align(Alignment.Center),
+                text = "Skip Interval: ${seekAmount / 1000}s",
+                color = Color.White
+            )
+        }
+    }
 }
 
 @Composable
@@ -398,13 +445,13 @@ private fun SeekIndicator(
         SeekIndicatorItem(
             modifier = Modifier.alpha(if (seekState.direction == SeekDirection.BACKWARD) 1f else 0f),
             direction = SeekDirection.BACKWARD,
-            count = seekState.count
+            time = seekState.time
         )
         Spacer(modifier = Modifier.weight(0.6f))
         SeekIndicatorItem(
             modifier = Modifier.alpha(if (seekState.direction == SeekDirection.FORWARD) 1f else 0f),
             direction = SeekDirection.FORWARD,
-            count = seekState.count
+            time = seekState.time
         )
         Spacer(modifier = Modifier.weight(0.2f))
     }
@@ -414,14 +461,14 @@ private fun SeekIndicator(
 private fun SeekIndicatorItem(
     modifier: Modifier = Modifier,
     direction: SeekDirection,
-    count: Int,
+    time: Long,
 ) {
 
     val suffix = if (direction == SeekDirection.FORWARD) "+" else "-"
 
     Text(
         modifier = modifier,
-        text = "$suffix${count * (SEEK_AMOUNT / 1000)}",
+        text = "$suffix${time / 1000}",
         color = Color.White,
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,

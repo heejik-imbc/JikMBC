@@ -1,5 +1,6 @@
 package jik.imbc.videoplayer.ui
 
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,29 +24,37 @@ enum class SeekDirection {
 
 data class SeekState(
     val direction: SeekDirection = SeekDirection.NONE,
-    val count: Int = 0,
-    val visible: Boolean = false
+    val time: Long = 0,
+    val visible: Boolean = false,
+    val seekAmount: Long
 ) {
     fun updateBySeek(seekDirection: SeekDirection): SeekState {
         return SeekState(
             direction = seekDirection,
-            count = if (this.direction == seekDirection) this.count + 1 else 1,
-            visible = true
+            time = if (this.direction == seekDirection) this.time + seekAmount else seekAmount,
+            visible = true,
+            seekAmount = seekAmount
         )
     }
 }
 
 @Composable
-internal fun rememberSeekState(): MutableState<SeekState> {
-    val state = remember { mutableStateOf(SeekState()) }
+internal fun rememberSeekState(seekAmount: Long): MutableState<SeekState> {
+    val state = remember {
+        mutableStateOf(SeekState(seekAmount = seekAmount))
+    }
 
-    LaunchedEffect(key1 = state.value.count, key2 = state.value.direction) {
-        if (state.value.count > 0) {
+    LaunchedEffect(seekAmount) {
+        state.value = state.value.copy(seekAmount = seekAmount)
+    }
+
+    LaunchedEffect(key1 = state.value.time, key2 = state.value.direction) {
+        if (state.value.time > 0) {
             delay(INDICATOR_TIMEOUT)
             state.value = state.value.copy(visible = false)
 
             delay(FADE_OUT_DURATION.toLong())
-            state.value = state.value.copy(count = 0)
+            state.value = state.value.copy(time = 0)
         }
     }
 
