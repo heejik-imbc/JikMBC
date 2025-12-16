@@ -2,6 +2,8 @@ package jik.imbc.data.repository
 
 import jik.imbc.data.mock.MockDramas
 import jik.imbc.data.mock.MockEntertainment
+import jik.imbc.data.mock.MockVideo.LONG_VIDEO_URL
+import jik.imbc.data.mock.MockVideo.SHORT_VIDEO_URL
 import jik.imbc.model.Content
 
 
@@ -13,7 +15,9 @@ class ContentRepositoryImpl : ContentRepository {
             MockEntertainment.map {
                 it.copy(
                     thumbnailUrl = "$BASE_URL_THUMBNAIL/${it.thumbnailUrl}",
-                    posterUrl = "$BASE_URL_THUMBNAIL/${it.posterUrl}"
+                    posterUrl = "$BASE_URL_THUMBNAIL/${it.posterUrl}",
+                    trailerUrl = SHORT_VIDEO_URL,
+                    videoUrl = LONG_VIDEO_URL
                 )
             }
         )
@@ -23,7 +27,9 @@ class ContentRepositoryImpl : ContentRepository {
         return Result.success(MockDramas.map {
             it.copy(
                 thumbnailUrl = "$BASE_URL_THUMBNAIL/${it.thumbnailUrl}",
-                posterUrl = "$BASE_URL_THUMBNAIL/${it.posterUrl}"
+                posterUrl = "$BASE_URL_THUMBNAIL/${it.posterUrl}",
+                trailerUrl = SHORT_VIDEO_URL,
+                videoUrl = LONG_VIDEO_URL
             )
         })
     }

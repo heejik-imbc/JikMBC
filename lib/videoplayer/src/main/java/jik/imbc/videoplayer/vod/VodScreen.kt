@@ -45,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
@@ -57,6 +56,7 @@ import jik.imbc.ui.layout.noRippleClickable
 import jik.imbc.videoplayer.R
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
+import jik.imbc.videoplayer.pip.setPip
 import jik.imbc.videoplayer.player.vod.ActiveState
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.player.vod.component.ControllerIcon
@@ -70,15 +70,17 @@ import kotlinx.coroutines.delay
 
 
 @Composable
-internal fun VodRoute(
+fun VodRoute(
     modifier: Modifier = Modifier,
-    viewModel: VodViewModel = viewModel()
+    viewModel: VodViewModel
 ) {
     val uiState: VodUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
 
+    val pipModifier: Modifier = modifier.setPip(viewModel.player.player, true)
+
     VodScreen(
-        modifier = modifier
+        modifier = pipModifier
             .fillMaxSize()
             .background(color = Color.Black),
         player = viewModel.player.player,

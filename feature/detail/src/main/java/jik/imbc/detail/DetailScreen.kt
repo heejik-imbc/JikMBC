@@ -203,7 +203,7 @@ private fun DetailScreen(
             id = uiState.content.id,
             origin = origin,
             imageUrl = uiState.content.thumbnailUrl,
-            trailerUrl = MockVideo.SHORT_VIDEO_URL
+            trailerUrl = uiState.content.trailerUrl
         )
     }
 }

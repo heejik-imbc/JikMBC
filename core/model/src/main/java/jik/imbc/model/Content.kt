@@ -10,7 +10,9 @@ data class Content(
     val rating: String,
     val releaseDate: String,
     val ratingCount: Int = 0,
-    var userRating: Float? = null
+    var userRating: Float? = null,
+    val trailerUrl: String = "",
+    val videoUrl: String = ""
 ) {
     private val baseUrl = "https://image.tmdb.org/t/p/w500"
     val releaseYear: String

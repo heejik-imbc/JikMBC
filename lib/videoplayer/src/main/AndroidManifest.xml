@@ -6,6 +6,9 @@
             android:name=".vod.VodActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"
+            android:supportsPictureInPicture="true"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenLayout|screenSize|smallestScreenSize"
             android:theme="@style/Theme.JikMBC.Vod" />
     </application>
 

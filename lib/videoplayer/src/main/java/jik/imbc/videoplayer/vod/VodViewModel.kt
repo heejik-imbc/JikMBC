@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import jik.imbc.data.mock.MockVideo.LONG_VIDEO_URL
 import jik.imbc.data.repository.ContentRepository
 import jik.imbc.data.repository.ContentRepositoryImpl
 import jik.imbc.model.Content
@@ -12,6 +11,7 @@ import jik.imbc.videoplayer.data.SettingRepository
 import jik.imbc.videoplayer.player.vod.VodPlayer
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.vod.VodActivity.Companion.EXTRA_CONTENT_ID
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 
 class VodViewModel(
     application: Application,
-    savedStateHandle: SavedStateHandle,
+    val savedStateHandle: SavedStateHandle,
 ) : AndroidViewModel(application = application) {
 
     val contentRepository: ContentRepository = ContentRepositoryImpl()
@@ -27,16 +27,15 @@ class VodViewModel(
 
     val player: VodPlayer = VodPlayer(context = application)
 
-    val content: Content = requireNotNull(savedStateHandle.get<Int>(EXTRA_CONTENT_ID)).let { id ->
-        contentRepository.getContentById(contentId = id).getOrDefault(Content.EMPTY)
-    }
+    private val content: MutableStateFlow<Content> = MutableStateFlow(getContent())
 
     val uiState: StateFlow<VodUiState> = combine(
+        content,
         player.state,
         player.currentPosition,
         player.duration,
         settingRepository.seekAmount
-    ) { state, position, duration, seekAmount ->
+    ) { content, state, position, duration, seekAmount ->
         VodUiState(content = content, playerState = state, position = position, duration = duration, seekAmount = seekAmount)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VodUiState())
 
@@ -64,8 +63,27 @@ class VodViewModel(
         player.changePosition(newPosition)
     }
 
-    private fun start() {
-        player.start(url = LONG_VIDEO_URL)
+    fun changePosition(position: Long) {
+        player.changePosition(position)
+    }
+
+    fun changeSeekAmount() {
+        settingRepository.changeSeekAmount()
+    }
+
+    fun setNewContent(contentId: Int?) {
+        savedStateHandle[EXTRA_CONTENT_ID] = requireNotNull(contentId)
+        content.value = getContent()
+        start()
+    }
+
+    fun start() {
+        player.start(url = content.value.videoUrl)
+    }
+
+    private fun getContent(): Content {
+        val contentId = requireNotNull(savedStateHandle.get<Int>(EXTRA_CONTENT_ID))
+        return contentRepository.getContentById(contentId = contentId).getOrDefault(Content.EMPTY)
     }
 
     private fun play() {
@@ -81,13 +99,6 @@ class VodViewModel(
         player.play()
     }
 
-    fun changePosition(position: Long) {
-        player.changePosition(position)
-    }
-
-    fun changeSeekAmount() {
-        settingRepository.changeSeekAmount()
-    }
 
     override fun onCleared() {
         super.onCleared()
