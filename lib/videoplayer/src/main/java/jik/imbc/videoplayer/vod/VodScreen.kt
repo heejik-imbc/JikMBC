@@ -56,7 +56,8 @@ import jik.imbc.ui.layout.noRippleClickable
 import jik.imbc.videoplayer.R
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
-import jik.imbc.videoplayer.pip.setPip
+import jik.imbc.videoplayer.pip.SetPipForPreAndroid12
+import jik.imbc.videoplayer.pip.setPipForPostAndroid12
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.player.vod.component.ControllerIcon
 import jik.imbc.videoplayer.player.vod.component.controllerCenterIconSize
@@ -76,10 +77,8 @@ fun VodRoute(
     val uiState: VodUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
 
-    val pipModifier: Modifier = modifier.setPip(viewModel.player.player, true)
-
     VodScreen(
-        modifier = pipModifier
+        modifier = modifier
             .fillMaxSize()
             .background(color = Color.Black),
         player = viewModel.player.player,
@@ -194,6 +193,7 @@ private fun VodScreen(
 private fun BoxScope.VodPlayer(
     modifier: Modifier = Modifier,
     player: ExoPlayer,
+    shouldEnterPipMode: Boolean = true
 ) {
     val presentationState = rememberPresentationState(player = player)
     val scaledModifier =
@@ -202,12 +202,13 @@ private fun BoxScope.VodPlayer(
             sourceSizeDp = presentationState.videoSizeDp
         )
 
-    PlayerSurface(
-        player = player,
-        surfaceType = SURFACE_TYPE_SURFACE_VIEW,
-        modifier = scaledModifier
-    )
+    SetPipForPreAndroid12(shouldEnterPipMode = shouldEnterPipMode)
 
+    PlayerSurface(
+        modifier = scaledModifier.setPipForPostAndroid12(player, shouldEnterPipMode = shouldEnterPipMode),
+        player = player,
+        surfaceType = SURFACE_TYPE_SURFACE_VIEW
+    )
 
     if (presentationState.coverSurface) {
         Box(
