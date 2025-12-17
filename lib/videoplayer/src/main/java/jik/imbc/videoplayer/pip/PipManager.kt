@@ -9,13 +9,18 @@ import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toAndroidRectF
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.graphics.toRect
+import androidx.core.util.Consumer
 import androidx.media3.common.VideoSize
 import androidx.media3.exoplayer.ExoPlayer
 
@@ -60,6 +65,25 @@ internal fun SetPipForPreAndroid12(shouldEnterPipMode: Boolean) {
             }
         }
     }
+}
+
+@Composable
+internal fun rememberIsInPipMode(): Boolean {
+    val activity = LocalContext.current.findActivity()
+    var pipMode by remember { mutableStateOf(activity.isInPictureInPictureMode) }
+
+    DisposableEffect(key1 = activity) {
+        val observer = Consumer<PictureInPictureModeChangedInfo> { info ->
+            pipMode = info.isInPictureInPictureMode
+        }
+
+        activity.addOnPictureInPictureModeChangedListener(observer)
+        onDispose {
+            activity.removeOnPictureInPictureModeChangedListener(observer)
+        }
+    }
+
+    return pipMode
 }
 
 internal fun Context.enterPip() {

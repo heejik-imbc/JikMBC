@@ -30,6 +30,7 @@ import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import androidx.media3.ui.compose.modifiers.resizeWithContentScale
 import androidx.media3.ui.compose.state.rememberPresentationState
 import jik.imbc.videoplayer.pip.SetPipForPreAndroid12
+import jik.imbc.videoplayer.pip.rememberIsInPipMode
 import jik.imbc.videoplayer.pip.setPipForPostAndroid12
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.ui.FADE_OUT_DURATION
@@ -84,6 +85,7 @@ private fun VodScreen(
 ) {
 
     var controllerVisible by remember { mutableStateOf(true) }
+    val isInPipMode = rememberIsInPipMode()
 
     LaunchedEffect(key1 = controllerVisible, key2 = playerState) {
         if (controllerVisible && playerState == VodPlayerState.Playing) {
@@ -124,6 +126,8 @@ private fun VodScreen(
             is VodPlayerState.Initial -> {}
             is VodPlayerState.Error -> {}
             is VodPlayerState.ActiveState -> {
+                if (isInPipMode) return@Box
+
                 VodController(
                     visible = controllerVisible,
                     playerState = playerState,
