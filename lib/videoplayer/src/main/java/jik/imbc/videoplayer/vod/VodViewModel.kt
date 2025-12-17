@@ -45,9 +45,9 @@ class VodViewModel(
 
     fun playPauseReplay() {
         when (uiState.value.playerState) {
-            is VodPlayerState.PLAYING -> pause()
-            is VodPlayerState.PAUSED -> play()
-            is VodPlayerState.ENDED -> replay()
+            is VodPlayerState.Playing -> pause()
+            is VodPlayerState.Paused -> play()
+            is VodPlayerState.Ended -> replay()
             else -> Unit
         }
     }

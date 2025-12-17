@@ -57,7 +57,6 @@ import jik.imbc.videoplayer.R
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
 import jik.imbc.videoplayer.pip.setPip
-import jik.imbc.videoplayer.player.vod.ActiveState
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.player.vod.component.ControllerIcon
 import jik.imbc.videoplayer.player.vod.component.controllerCenterIconSize
@@ -118,7 +117,7 @@ private fun VodScreen(
     var controllerVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(key1 = controllerVisible, key2 = playerState) {
-        if (controllerVisible && playerState == VodPlayerState.PLAYING) {
+        if (controllerVisible && playerState == VodPlayerState.Playing) {
             delay(3000)
             controllerVisible = false
         }
@@ -142,20 +141,20 @@ private fun VodScreen(
                 },
                 onLeftConsecutiveTap = {
                     onBackward()
-                    controllerVisible = preControllerVisible || prePlayerState !is VodPlayerState.PLAYING
+                    controllerVisible = preControllerVisible || prePlayerState !is VodPlayerState.Playing
                 },
                 onRightConsecutiveTap = {
                     onForward()
-                    controllerVisible = preControllerVisible || prePlayerState !is VodPlayerState.PLAYING
+                    controllerVisible = preControllerVisible || prePlayerState !is VodPlayerState.Playing
                 },
             )
     ) {
         VodPlayer(player = player)
 
         when (playerState) {
-            is VodPlayerState.INITIAL -> {}
-            is VodPlayerState.ERROR -> {}
-            is ActiveState -> {
+            is VodPlayerState.Initial -> {}
+            is VodPlayerState.Error -> {}
+            is VodPlayerState.ActiveState -> {
                 VodController(
                     visible = controllerVisible,
                     playerState = playerState,
@@ -223,7 +222,7 @@ private fun BoxScope.VodPlayer(
 private fun VodController(
     modifier: Modifier = Modifier,
     visible: Boolean,
-    playerState: ActiveState,
+    playerState: VodPlayerState.ActiveState,
     title: String,
     position: Long,
     duration: Long,
@@ -315,7 +314,7 @@ private fun VodTopController(
 @Composable
 private fun VodCenterController(
     modifier: Modifier = Modifier,
-    state: ActiveState,
+    state: VodPlayerState.ActiveState,
     onBackward: () -> Unit,
     onPlayPauseReplay: () -> Unit,
     onForward: () -> Unit
@@ -345,29 +344,29 @@ private fun VodCenterController(
 
 @Composable
 private fun CenterPlaybackControl(
-    state: ActiveState,
+    state: VodPlayerState.ActiveState,
     onClick: () -> Unit
 ) {
     when (state) {
-        VodPlayerState.BUFFERING ->
+        VodPlayerState.Buffering ->
             CircularProgressIndicator(
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(controllerCenterIconSize)
             )
 
-        VodPlayerState.ENDED ->
+        VodPlayerState.Ended ->
             ControllerIcon(
                 imageVector = VideoPlayerIcons.Replay,
                 onClick = onClick
             )
 
-        VodPlayerState.PAUSED ->
+        VodPlayerState.Paused ->
             ControllerIcon(
                 imageVector = VideoPlayerIcons.PlayArrow,
                 onClick = onClick
             )
 
-        VodPlayerState.PLAYING ->
+        VodPlayerState.Playing ->
             ControllerIcon(
                 imageVector = VideoPlayerIcons.Pause,
                 onClick = onClick

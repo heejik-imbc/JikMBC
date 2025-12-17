@@ -14,7 +14,7 @@ class VodPlayer(context: Context) {
 
     val player: ExoPlayer = ExoPlayer.Builder(context).build()
 
-    val state: MutableStateFlow<VodPlayerState> = MutableStateFlow(VodPlayerState.INITIAL)
+    val state: MutableStateFlow<VodPlayerState> = MutableStateFlow(VodPlayerState.Initial)
 
     val duration = MutableStateFlow(C.TIME_UNSET)
 

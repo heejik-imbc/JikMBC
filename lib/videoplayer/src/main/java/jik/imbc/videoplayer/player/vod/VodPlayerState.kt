@@ -1,21 +1,22 @@
 package jik.imbc.videoplayer.player.vod
 
 sealed interface VodPlayerState {
-    data object INITIAL : VodPlayerState
 
-    data object PLAYING : VodPlayerState, ActiveState
+    interface ActiveState : VodPlayerState
 
-    data object PAUSED : VodPlayerState, ActiveState
+    data object Initial : VodPlayerState
 
-    data object BUFFERING : VodPlayerState, ActiveState
+    data object Playing : ActiveState
 
-    data object ENDED : VodPlayerState, ActiveState
+    data object Paused : ActiveState
 
-    data class ERROR(val message: String?, val code: Int?) : VodPlayerState
+    data object Buffering : ActiveState
+
+    data object Ended : ActiveState
+
+    data class Error(val message: String?, val code: Int?) : VodPlayerState
 
     companion object {
-        val positionValidStates = setOf(PLAYING, PAUSED, BUFFERING)
+        val positionValidStates = setOf(Playing, Paused, Buffering)
     }
 }
-
-sealed interface ActiveState : VodPlayerState

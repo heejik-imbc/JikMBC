@@ -16,26 +16,26 @@ internal val vodPlayerListener: (changeState: (VodPlayerState) -> Unit) -> Playe
 
                 val vodPState = when (player.playbackState) {
                     Player.STATE_IDLE -> if (error == null) {
-                        VodPlayerState.INITIAL
+                        VodPlayerState.Initial
                     } else {
-                        VodPlayerState.ERROR(
+                        VodPlayerState.Error(
                             player.playerError?.message,
                             player.playerError?.errorCode
                         )
                     }
 
-                    Player.STATE_ENDED -> VodPlayerState.ENDED
+                    Player.STATE_ENDED -> VodPlayerState.Ended
 
                     Player.STATE_BUFFERING -> if (player.contentPosition == 0L) {
-                        VodPlayerState.INITIAL
+                        VodPlayerState.Initial
                     } else {
-                        VodPlayerState.BUFFERING
+                        VodPlayerState.Buffering
                     }
 
                     Player.STATE_READY -> if (player.playWhenReady) {
-                        VodPlayerState.PLAYING
+                        VodPlayerState.Playing
                     } else {
-                        VodPlayerState.PAUSED
+                        VodPlayerState.Paused
                     }
 
                     else -> return
