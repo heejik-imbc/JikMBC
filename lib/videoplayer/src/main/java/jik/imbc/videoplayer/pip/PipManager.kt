@@ -50,7 +50,7 @@ internal fun SetPipForPreAndroid12(shouldEnterPipMode: Boolean) {
         DisposableEffect(key1 = context) {
             val onUserLeaveBehavior = Runnable {
                 if (currentShouldEnterPipMode) {
-                    context.findActivity().enterPictureInPictureMode(PictureInPictureParams.Builder().build())
+                    context.enterPip()
                 }
             }
             context.findActivity().addOnUserLeaveHintListener(onUserLeaveBehavior)
@@ -60,6 +60,10 @@ internal fun SetPipForPreAndroid12(shouldEnterPipMode: Boolean) {
             }
         }
     }
+}
+
+internal fun Context.enterPip() {
+    findActivity().enterPictureInPictureMode(PictureInPictureParams.Builder().build())
 }
 
 

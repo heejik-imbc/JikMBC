@@ -1,7 +1,9 @@
 package jik.imbc.videoplayer.icons
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PictureInPictureAlt
 import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PictureInPictureAlt
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Replay
 
@@ -13,4 +15,6 @@ internal object VideoPlayerIcons {
     val Pause = Icons.Rounded.Pause
 
     val Replay = Icons.Rounded.Replay
+
+    val Pip = Icons.Rounded.PictureInPictureAlt
 }

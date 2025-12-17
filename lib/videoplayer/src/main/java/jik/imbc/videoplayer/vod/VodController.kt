@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,7 @@ import jik.imbc.ui.layout.noRippleClickable
 import jik.imbc.videoplayer.R
 import jik.imbc.videoplayer.component.VPSlider
 import jik.imbc.videoplayer.icons.VideoPlayerIcons
+import jik.imbc.videoplayer.pip.enterPip
 import jik.imbc.videoplayer.player.vod.VodPlayerState
 import jik.imbc.videoplayer.player.vod.component.ControllerIcon
 import jik.imbc.videoplayer.player.vod.component.controllerCenterIconSize
@@ -111,16 +113,18 @@ internal fun VodController(
 private fun VodTopController(
     modifier: Modifier = Modifier,
     title: String,
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
 ) {
+
+    val context = LocalContext.current
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 12.dp)
+            .padding(top = 12.dp, start = 24.dp, end = 24.dp)
     ) {
         Icon(
             modifier = Modifier
-                .padding(start = 24.dp)
                 .size(32.dp)
                 .align(Alignment.TopStart)
                 .noRippleClickable(onClick = navigateUp),
@@ -133,6 +137,16 @@ private fun VodTopController(
             text = title,
             color = Color.White,
             fontSize = 14.sp
+        )
+
+        Icon(
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.TopEnd)
+                .noRippleClickable(onClick = { context.enterPip() }),
+            imageVector = VideoPlayerIcons.Pip,
+            contentDescription = "Picture in Picture",
+            tint = Color.White,
         )
     }
 }
