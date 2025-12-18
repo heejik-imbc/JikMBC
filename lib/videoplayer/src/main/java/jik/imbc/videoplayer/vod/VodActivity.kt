@@ -31,7 +31,6 @@ class VodActivity : ComponentActivity() {
         setIntent(intent)
 
         vodViewModel.setNewContent(contentId = intent.getIntExtra(EXTRA_CONTENT_ID, -1).takeIf { it != -1 })
-        vodViewModel.start()
     }
 
 

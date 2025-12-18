@@ -72,6 +72,8 @@ class VodViewModel(
     }
 
     fun setNewContent(contentId: Int?) {
+        if (savedStateHandle.get<Int>(EXTRA_CONTENT_ID) == contentId) return
+
         savedStateHandle[EXTRA_CONTENT_ID] = requireNotNull(contentId)
         content.value = getContent()
         start()
