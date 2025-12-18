@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
@@ -67,6 +68,17 @@ fun TrailerSection(
     val coroutineScope = rememberCoroutineScope()
     var controllerVisibilityJob: Job? by remember { mutableStateOf(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+
+    LifecycleStartEffect(key1 = Unit) {
+        viewModel.initialize()
+        viewModel.start(url = trailerUrl)
+
+        onStopOrDispose {
+            viewModel.releasePlayer()
+        }
+    }
+
 
     LaunchedEffect(key1 = Unit) {
         if (autoPlay && viewModel.autoPlayed.not()) {
@@ -111,7 +123,7 @@ fun TrailerSection(
 
             else -> {
                 TrailerPlayerView(
-                    player = viewModel.player.player,
+                    player = viewModel.getExoPlayer(),
                     playOrPause = {
                         viewModel.playOrPause()
                         controllerVisible = true

@@ -1,8 +1,10 @@
 package jik.imbc.videoplayer.trailer
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.exoplayer.ExoPlayer
 import jik.imbc.videoplayer.player.trailer.TrailerPlayer
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +27,10 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
     private var shouldResumePlayback = false
     var autoPlayed = false
 
+    fun initialize() {
+        player.initialize()
+    }
+
     fun start(url: String) {
         player.start(url = url)
     }
@@ -38,8 +44,10 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         }
     }
 
+    fun getExoPlayer(): ExoPlayer = requireNotNull(player.player)
+
     fun replay() {
-        player.player.seekTo(0)
+        player.changePosition(position = 0L)
         player.play()
     }
 
@@ -60,8 +68,7 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
+    fun releasePlayer() {
         player.release()
     }
 }
