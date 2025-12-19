@@ -2,6 +2,8 @@ package jik.imbc.videoplayer.player.trailer
 
 import androidx.media3.common.Player
 
+
+// todo: suspend fun Player.listen 으로 수정하는 방향 고민
 internal val trailerPlayerListener: (changeState: (TrailerPlayerState) -> Unit) -> Player.Listener =
     { changeState ->
         object : Player.Listener {

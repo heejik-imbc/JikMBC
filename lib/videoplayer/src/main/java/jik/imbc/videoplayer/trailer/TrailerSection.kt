@@ -1,5 +1,6 @@
 package jik.imbc.videoplayer.trailer
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -44,8 +45,8 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import jik.imbc.videoplayer.component.VPSlider
@@ -68,6 +69,11 @@ fun TrailerSection(
     val coroutineScope = rememberCoroutineScope()
     var controllerVisibilityJob: Job? by remember { mutableStateOf(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val player by viewModel.player.collectAsStateWithLifecycle()
+
+    LaunchedEffect(key1 = player) {
+        Log.d("heejik", "player: $player")
+    }
 
 
     LifecycleStartEffect(key1 = Unit) {
@@ -122,19 +128,21 @@ fun TrailerSection(
             }
 
             else -> {
-                TrailerPlayerView(
-                    player = viewModel.getExoPlayer(),
-                    playOrPause = {
-                        viewModel.playOrPause()
-                        controllerVisible = true
+                player?.let {
+                    TrailerPlayerView(
+                        player = it,
+                        playOrPause = {
+                            viewModel.playOrPause()
+                            controllerVisible = true
 
-                        controllerVisibilityJob?.cancel()
-                        controllerVisibilityJob = coroutineScope.launch {
-                            delay(1.3.seconds)
-                            controllerVisible = false
+                            controllerVisibilityJob?.cancel()
+                            controllerVisibilityJob = coroutineScope.launch {
+                                delay(1.3.seconds)
+                                controllerVisible = false
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 
@@ -171,7 +179,7 @@ fun TrailerSection(
 @Composable
 private fun TrailerPlayerView(
     modifier: Modifier = Modifier,
-    player: ExoPlayer,
+    player: Player,
     playOrPause: () -> Unit
 ) {
     PlayerSurface(

@@ -3,6 +3,7 @@ package jik.imbc.videoplayer.player.trailer
 import android.content.Context
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState.Companion.positionValidStates
 import kotlinx.coroutines.delay
@@ -13,7 +14,8 @@ import kotlin.time.Duration.Companion.seconds
 
 class TrailerPlayer(val context: Context) {
 
-    var player: ExoPlayer? = null
+    var player: Player? = null
+        private set
 
     val state: MutableStateFlow<TrailerPlayerState> = MutableStateFlow(TrailerPlayerState.INITIAL)
 
