@@ -14,6 +14,6 @@ sealed interface TrailerPlayerState {
     data class ERROR(val message: String?, val code: Int?) : TrailerPlayerState
 
     companion object {
-        val positionValidStates = setOf(PLAYING, PAUSED, BUFFERING)
+        val positionValidStates = setOf(PLAYING, BUFFERING)
     }
 }
