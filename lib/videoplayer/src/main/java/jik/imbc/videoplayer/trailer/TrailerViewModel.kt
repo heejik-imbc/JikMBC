@@ -1,7 +1,6 @@
 package jik.imbc.videoplayer.trailer
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import jik.imbc.videoplayer.player.trailer.TrailerPlayer
@@ -26,14 +25,12 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
         TrailerUiState(playerState = state, position = position, duration = duration)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
 
-    var autoPlayed = false
-
-    fun initializePlayer() {
-        playerManager.initialize()
+    fun initializePlayer(url: String) {
+        playerManager.initialize(url)
     }
 
-    fun start(url: String) {
-        playerManager.start(url = url)
+    fun start() {
+        playerManager.start()
     }
 
     fun playOrPause() {
@@ -55,6 +52,7 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
     }
 
     fun releasePlayer() {
+
         playerManager.release()
     }
 }

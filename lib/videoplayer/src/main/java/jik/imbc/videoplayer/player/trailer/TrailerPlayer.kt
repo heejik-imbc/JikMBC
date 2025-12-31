@@ -30,7 +30,9 @@ class TrailerPlayer(val context: Context) {
         }
     }
 
-    fun initialize() {
+    var lastPositionBeforeRelease = C.TIME_UNSET
+
+    fun initialize(url: String) {
         player.value = ExoPlayer.Builder(context).build()
             .apply {
                 addListener(trailerPlayerListener {
@@ -42,17 +44,18 @@ class TrailerPlayer(val context: Context) {
                         }
                     }
                 })
+                setMediaItem(MediaItem.fromUri(url), lastPositionBeforeRelease)
             }
     }
 
     fun release() {
+        lastPositionBeforeRelease = player.value?.currentPosition ?: C.TIME_UNSET
         player.value?.release()
         player.value = null
     }
 
-    fun start(url: String) {
+    fun start() {
         player.value?.apply {
-            setMediaItem(MediaItem.fromUri(url))
             playWhenReady = true
             prepare()
         }

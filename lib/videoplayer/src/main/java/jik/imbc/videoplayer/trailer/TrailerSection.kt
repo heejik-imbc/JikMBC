@@ -70,19 +70,13 @@ fun TrailerSection(
     val player by viewModel.player.collectAsStateWithLifecycle()
 
     LifecycleStartEffect(key1 = Unit) {
-        viewModel.initializePlayer()
-        viewModel.start(url = trailerUrl)
+        viewModel.initializePlayer(url = trailerUrl)
+        if (autoPlay) {
+            viewModel.start()
+        }
 
         onStopOrDispose {
             viewModel.releasePlayer()
-        }
-    }
-
-
-    LaunchedEffect(key1 = Unit) {
-        if (autoPlay && viewModel.autoPlayed.not()) {
-            viewModel.start(url = trailerUrl)
-            viewModel.autoPlayed = true
         }
     }
 
@@ -91,7 +85,7 @@ fun TrailerSection(
             TrailerPlayerState.INITIAL -> {
                 TrailerThumbnail(
                     imageUrl = thumbnailUrl,
-                    start = { viewModel.start(url = trailerUrl) }
+                    start = { viewModel.start() }
                 )
             }
 
