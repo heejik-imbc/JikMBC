@@ -40,12 +40,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
 import jik.imbc.videoplayer.component.VPSlider
@@ -68,10 +67,10 @@ fun TrailerSection(
     val coroutineScope = rememberCoroutineScope()
     var controllerVisibilityJob: Job? by remember { mutableStateOf(null) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+    val player by viewModel.player.collectAsStateWithLifecycle()
 
     LifecycleStartEffect(key1 = Unit) {
-        viewModel.initialize()
+        viewModel.initializePlayer()
         viewModel.start(url = trailerUrl)
 
         onStopOrDispose {
@@ -84,14 +83,6 @@ fun TrailerSection(
         if (autoPlay && viewModel.autoPlayed.not()) {
             viewModel.start(url = trailerUrl)
             viewModel.autoPlayed = true
-        }
-    }
-
-    LifecycleResumeEffect(key1 = Unit) {
-        viewModel.resumeIfWasPlaying()
-
-        onPauseOrDispose {
-            viewModel.pauseIfPlaying()
         }
     }
 
@@ -122,19 +113,21 @@ fun TrailerSection(
             }
 
             else -> {
-                TrailerPlayerView(
-                    player = viewModel.getExoPlayer(),
-                    playOrPause = {
-                        viewModel.playOrPause()
-                        controllerVisible = true
+                player?.let {
+                    TrailerPlayerView(
+                        player = it,
+                        playOrPause = {
+                            viewModel.playOrPause()
+                            controllerVisible = true
 
-                        controllerVisibilityJob?.cancel()
-                        controllerVisibilityJob = coroutineScope.launch {
-                            delay(1.3.seconds)
-                            controllerVisible = false
+                            controllerVisibilityJob?.cancel()
+                            controllerVisibilityJob = coroutineScope.launch {
+                                delay(1.3.seconds)
+                                controllerVisible = false
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
 
@@ -171,7 +164,7 @@ fun TrailerSection(
 @Composable
 private fun TrailerPlayerView(
     modifier: Modifier = Modifier,
-    player: ExoPlayer,
+    player: Player,
     playOrPause: () -> Unit
 ) {
     PlayerSurface(

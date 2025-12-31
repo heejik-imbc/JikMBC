@@ -13,7 +13,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class TrailerPlayer(val context: Context) {
 
-    var player: ExoPlayer? = null
+    var player: MutableStateFlow<ExoPlayer?> = MutableStateFlow(null)
 
     val state: MutableStateFlow<TrailerPlayerState> = MutableStateFlow(TrailerPlayerState.INITIAL)
 
@@ -24,14 +24,14 @@ class TrailerPlayer(val context: Context) {
 
         while (true) {
             if (state.value in positionValidStates) {
-                emit(player?.currentPosition ?: 0L)
+                emit(player.value?.currentPosition ?: 0L)
             }
             delay(1.seconds / 30)
         }
     }
 
     fun initialize() {
-        player = ExoPlayer.Builder(context).build()
+        player.value = ExoPlayer.Builder(context).build()
             .apply {
                 addListener(trailerPlayerListener {
                     state.value = it
@@ -46,12 +46,12 @@ class TrailerPlayer(val context: Context) {
     }
 
     fun release() {
-        player?.release()
-        player = null
+        player.value?.release()
+        player.value = null
     }
 
     fun start(url: String) {
-        player?.apply {
+        player.value?.apply {
             setMediaItem(MediaItem.fromUri(url))
             playWhenReady = true
             prepare()
@@ -59,14 +59,14 @@ class TrailerPlayer(val context: Context) {
     }
 
     fun play() {
-        player?.play()
+        player.value?.play()
     }
 
     fun pause() {
-        player?.pause()
+        player.value?.pause()
     }
 
     fun changePosition(position: Long) {
-        player?.seekTo(position)
+        player.value?.seekTo(position)
     }
 }

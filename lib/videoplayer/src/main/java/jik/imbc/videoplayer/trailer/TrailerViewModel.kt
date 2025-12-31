@@ -4,7 +4,6 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.exoplayer.ExoPlayer
 import jik.imbc.videoplayer.player.trailer.TrailerPlayer
 import jik.imbc.videoplayer.player.trailer.TrailerPlayerState
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,60 +14,47 @@ import kotlinx.coroutines.flow.stateIn
 
 class TrailerViewModel(application: Application) : AndroidViewModel(application = application) {
 
-    val player: TrailerPlayer = TrailerPlayer(context = application)
+    private val playerManager: TrailerPlayer = TrailerPlayer(context = application)
+
+    val player = playerManager.player
+
     val uiState: StateFlow<TrailerUiState> = combine(
-        player.state,
-        player.currentPosition,
-        player.duration
+        playerManager.state,
+        playerManager.currentPosition,
+        playerManager.duration
     ) { state, position, duration ->
         TrailerUiState(playerState = state, position = position, duration = duration)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), TrailerUiState())
 
-    private var shouldResumePlayback = false
     var autoPlayed = false
 
-    fun initialize() {
-        player.initialize()
+    fun initializePlayer() {
+        playerManager.initialize()
     }
 
     fun start(url: String) {
-        player.start(url = url)
+        playerManager.start(url = url)
     }
 
     fun playOrPause() {
         when (uiState.value.playerState) {
-            TrailerPlayerState.PLAYING -> player.pause()
-            TrailerPlayerState.PAUSED -> player.play()
+            TrailerPlayerState.PLAYING -> playerManager.pause()
+            TrailerPlayerState.PAUSED -> playerManager.play()
             TrailerPlayerState.ENDED -> replay()
             else -> Unit
         }
     }
 
-    fun getExoPlayer(): ExoPlayer = requireNotNull(player.player)
-
     fun replay() {
-        player.changePosition(position = 0L)
-        player.play()
+        playerManager.changePosition(position = 0L)
+        playerManager.play()
     }
 
     fun changePosition(position: Long) {
-        player.changePosition(position)
-    }
-
-    fun pauseIfPlaying() {
-        shouldResumePlayback = uiState.value.playerState == TrailerPlayerState.PLAYING
-        if (shouldResumePlayback) {
-            player.pause()
-        }
-    }
-
-    fun resumeIfWasPlaying() {
-        if (shouldResumePlayback) {
-            player.play()
-        }
+        playerManager.changePosition(position)
     }
 
     fun releasePlayer() {
-        player.release()
+        playerManager.release()
     }
 }
