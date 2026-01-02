@@ -35,6 +35,7 @@ class TrailerPlayer(val context: Context) {
     fun initialize(url: String) {
         player.value = ExoPlayer.Builder(context).build()
             .apply {
+                setMediaItem(MediaItem.fromUri(url), lastPositionBeforeRelease)
                 addListener(trailerPlayerListener {
                     state.value = it
 
@@ -44,7 +45,6 @@ class TrailerPlayer(val context: Context) {
                         }
                     }
                 })
-                setMediaItem(MediaItem.fromUri(url), lastPositionBeforeRelease)
             }
     }
 

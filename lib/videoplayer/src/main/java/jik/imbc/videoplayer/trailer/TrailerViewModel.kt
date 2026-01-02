@@ -52,7 +52,6 @@ class TrailerViewModel(application: Application) : AndroidViewModel(application 
     }
 
     fun releasePlayer() {
-
         playerManager.release()
     }
 }

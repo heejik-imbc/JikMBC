@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
@@ -48,11 +49,20 @@ fun VodRoute(
     val uiState: VodUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
 
+    LifecycleStartEffect(key1 = Unit) {
+        viewModel.initializePlayer()
+        viewModel.start()
+
+        onStopOrDispose {
+            viewModel.releasePlayer()
+        }
+    }
+
     VodScreen(
         modifier = modifier
             .fillMaxSize()
             .background(color = Color.Black),
-        player = viewModel.player.player,
+        player = viewModel.playerManager.player,
         playerState = uiState.playerState,
         title = uiState.content.title,
         position = uiState.position,

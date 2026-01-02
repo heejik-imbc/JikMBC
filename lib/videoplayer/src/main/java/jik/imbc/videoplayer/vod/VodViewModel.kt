@@ -25,22 +25,27 @@ class VodViewModel(
     val contentRepository: ContentRepository = ContentRepositoryImpl()
     val settingRepository: SettingRepository = SettingRepository()
 
-    val player: VodPlayer = VodPlayer(context = application)
+    val playerManager: VodPlayer = VodPlayer(context = application)
 
     private val content: MutableStateFlow<Content> = MutableStateFlow(getContent())
 
     val uiState: StateFlow<VodUiState> = combine(
         content,
-        player.state,
-        player.currentPosition,
-        player.duration,
+        playerManager.state,
+        playerManager.currentPosition,
+        playerManager.duration,
         settingRepository.seekAmount
     ) { content, state, position, duration, seekAmount ->
         VodUiState(content = content, playerState = state, position = position, duration = duration, seekAmount = seekAmount)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VodUiState())
 
-    init {
-        start()
+
+    fun initializePlayer() {
+        playerManager.initialize(url = content.value.videoUrl)
+    }
+
+    fun releasePlayer() {
+        playerManager.release()
     }
 
     fun playPauseReplay() {
@@ -54,17 +59,17 @@ class VodViewModel(
 
     fun skipBack() {
         val newPosition = (uiState.value.position - uiState.value.seekAmount).coerceAtLeast(0)
-        player.changePosition(newPosition)
+        playerManager.changePosition(newPosition)
     }
 
     fun skipForward() {
         val newPosition =
             (uiState.value.position + uiState.value.seekAmount).coerceAtMost(uiState.value.duration)
-        player.changePosition(newPosition)
+        playerManager.changePosition(newPosition)
     }
 
     fun changePosition(position: Long) {
-        player.changePosition(position)
+        playerManager.changePosition(position)
     }
 
     fun changeSeekAmount() {
@@ -80,7 +85,7 @@ class VodViewModel(
     }
 
     fun start() {
-        player.start(url = content.value.videoUrl)
+        playerManager.start()
     }
 
     private fun getContent(): Content {
@@ -89,22 +94,15 @@ class VodViewModel(
     }
 
     private fun play() {
-        player.play()
+        playerManager.play()
     }
 
     private fun pause() {
-        player.pause()
+        playerManager.pause()
     }
 
     private fun replay() {
-        player.changePosition(position = 0L)
-        player.play()
-    }
-
-
-    override fun onCleared() {
-        super.onCleared()
-
-        player.release()
+        playerManager.changePosition(position = 0L)
+        playerManager.play()
     }
 }

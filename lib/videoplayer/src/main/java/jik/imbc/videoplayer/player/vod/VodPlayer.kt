@@ -29,12 +29,9 @@ class VodPlayer(context: Context) {
         }
     }
 
-    init {
-        initialize()
-    }
-
-    fun initialize() {
+    fun initialize(url: String) {
         player.apply {
+            setMediaItem(MediaItem.fromUri(url))
             addListener(vodPlayerListener {
                 state.value = it
 
@@ -51,9 +48,8 @@ class VodPlayer(context: Context) {
         player.release()
     }
 
-    fun start(url: String) {
+    fun start() {
         player.apply {
-            setMediaItem(MediaItem.fromUri(url))
             playWhenReady = true
             prepare()
         }
